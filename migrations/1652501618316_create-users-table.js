@@ -21,6 +21,10 @@ exports.up = (pgm) => {
 			type: 'TEXT',
 			notNull: true,
 		},
+		foto_profil: {
+			type: 'TEXT',
+			notNull: false,
+		},
 	});
 };
 
