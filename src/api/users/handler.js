@@ -16,12 +16,6 @@ const verifyEmail = async (email) => {
 	const result = await pool.query(query);
 
 	if (result.rows.length > 0) {
-		// const response = h.response({
-		// 	status: 'fail',
-		// 	message: 'Filed to add email. Email is alredy in use.',
-		// });
-		// response.code(400);
-		// return response;
 		throw new InvariantError('Filed to add email. Email is alredy in use.');
 	}
 };
