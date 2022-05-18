@@ -11,11 +11,6 @@ const routes = [
 		path: '/users/{id}',
 		handler: getUserByIdHandler,
 	},
-	{
-		method: 'GET',
-		path: '/users',
-		handler: () => {},
-	},
 ];
 
 module.exports = routes;
