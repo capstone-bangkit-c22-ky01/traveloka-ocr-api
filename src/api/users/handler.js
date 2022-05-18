@@ -23,8 +23,7 @@ const verifyEmail = async (email) => {
 const postUserHandler = async (request, h) => {
 	try {
 		const { name, email, password, fotoProfil } = request.payload;
-		const tunggu = await verifyEmail(email);
-		console.log(tunggu);
+		await verifyEmail(email);
 
 		const id = `users-${nanoid(16)}`;
 		const hashedPassword = await bcrypt.hash(password, 10);
@@ -70,4 +69,40 @@ const postUserHandler = async (request, h) => {
 	}
 };
 
-module.exports = { postUserHandler };
+const getUserByIdHandler = async (request, h) => {
+	try {
+		const { id } = request.params;
+
+		const query = {
+			text: 'SELECT * FROM users WHERE id = $1',
+			values: [id],
+		};
+		const result = await pool.query(query);
+		const dataUser = result.rows;
+
+		return {
+			status: 'success',
+			data: { user: dataUser },
+		};
+	} catch (error) {
+		if (error instanceof ClientError) {
+			const response = h.response({
+				status: 'fail',
+				message: error.message,
+			});
+			response.code(error.statusCode);
+			return response;
+		}
+
+		// Server ERROR!
+		const response = h.response({
+			status: 'error',
+			message: 'Sorry, there was a failure on our server.',
+		});
+		response.code(500);
+		console.error(error);
+		return response;
+	}
+};
+
+module.exports = { postUserHandler, getUserByIdHandler };

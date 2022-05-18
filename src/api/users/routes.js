@@ -1,4 +1,4 @@
-const { postUserHandler } = require('./handler');
+const { postUserHandler, getUserByIdHandler } = require('./handler');
 
 const routes = [
 	{
@@ -9,7 +9,7 @@ const routes = [
 	{
 		method: 'GET',
 		path: '/users/{id}',
-		handler: () => {},
+		handler: getUserByIdHandler,
 	},
 	{
 		method: 'GET',
