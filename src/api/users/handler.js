@@ -78,8 +78,11 @@ const getUserByIdHandler = async (request, h) => {
 			values: [id],
 		};
 		const result = await pool.query(query);
-		const dataUser = result.rows;
+		if (!result.rows.length) {
+			throw new NotFoundError('User tidak ditemukan');
+		}
 
+		const dataUser = result.rows;
 		return {
 			status: 'success',
 			data: { user: dataUser },
