@@ -35,8 +35,6 @@
 
 ---
 
----
-
 ## API
 
 ### Authentication User (Use JWT)
@@ -48,16 +46,16 @@
   - endpoint: `/users`
   - body request:
     ```json
-    name: string | required
-    email: string, email, unique | required
-    password: string | required
-    foto_profil: img | nullable
+    "name": string | required
+    "email": string, email, unique | required
+    "password": string | required
+    "foto_profil": img | nullable
     ```
   - body response:
     ```json
-    status: "success",
-    message: "user added successfully",
-    data: {
+    "status": "success",
+    "message": "user added successfully",
+    "data": {
         "user_id": "users-randomidsting"
     }
     ```
@@ -66,16 +64,16 @@
   - endpoint: `/authentication`
   - body request:
     ```json
-    email: string, email | required
-    password: string | required
+    "email": string, email | required
+    "password": string | required
     ```
   - body response:
     ```json
-    status: "success",
-    message: "Authentication success",
-    data: {
-        accessToken: "eyJhbG...",
-        refreshToken: "eyJhb..."
+    "status": "success",
+    "message": "Authentication success",
+    "data": {
+        "accessToken": "eyJhbG...",
+        "refreshToken": "eyJhb..."
     }
     ```
 
@@ -86,22 +84,22 @@
   - endpoint: `/auth/google`
   - body request:
     ```json
-    email: string, email | required
-    password: string | required
+    "email": string, email | required
+    "password": string | required
     ```
   - body response:
     ```json
-    status: "success",
-    message: "Authentication success",
-    data: {
-      token: "ya29.a0A...",
-      expiresIn: 3598,
-        profile: {
-            id: "112...",
-            name: "Maish",
-            picture: "https://lh3.googleusercontent.com/a/AA...",
-            email: "email@gmail.com",
-            email_verified: true
+    "status": "success",
+    "message": "Authentication success",
+    "data": {
+      "token": "ya29.a0A...",
+      "expiresIn": 3598,
+        "profile": {
+            "id": "112...",
+            "name": "Maish",
+            "picture": "https://lh3.googleusercontent.com/a/AA...",
+            "email": "email@gmail.com",
+            "email_verified": true
         }
     }
     ```
