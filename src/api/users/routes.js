@@ -1,4 +1,4 @@
-const { postUserHandler, getUserByIdHandler } = require('./handler');
+const { postUserHandler, getUserByAuthHandler } = require('./handler');
 
 const routes = [
 	{
@@ -8,8 +8,13 @@ const routes = [
 	},
 	{
 		method: 'GET',
-		path: '/users/{id}',
-		handler: getUserByIdHandler,
+		path: '/users',
+		options: {
+			auth: {
+				strategies: ['ocrapp_jwt', 'google'],
+			},
+			handler: getUserByAuthHandler,
+		},
 	},
 ];
 

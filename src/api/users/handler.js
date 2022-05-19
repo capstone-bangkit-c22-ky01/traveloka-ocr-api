@@ -69,9 +69,9 @@ const postUserHandler = async (request, h) => {
 	}
 };
 
-const getUserByIdHandler = async (request, h) => {
+const getUserByAuthHandler = async (request, h) => {
 	try {
-		const { id } = request.params;
+		const { id } = request.auth.credentials;
 
 		const query = {
 			text: 'SELECT * FROM users WHERE id = $1',
@@ -108,4 +108,4 @@ const getUserByIdHandler = async (request, h) => {
 	}
 };
 
-module.exports = { postUserHandler, getUserByIdHandler };
+module.exports = { postUserHandler, getUserByAuthHandler };

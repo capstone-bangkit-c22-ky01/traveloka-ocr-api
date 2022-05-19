@@ -137,7 +137,7 @@ const deleteAuthenticationHandler = async (request, h) => {
 
 		return {
 			status: 'success',
-			message: 'Refresh token has been deleted',
+			message: 'Authentications has been removed',
 		};
 	} catch (error) {
 		if (error instanceof ClientError) {
