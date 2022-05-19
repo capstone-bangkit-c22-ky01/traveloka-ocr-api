@@ -2,6 +2,7 @@ require('dotenv').config();
 
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
+const Bell = require('@hapi/bell');
 
 // users
 const routesUsers = require('./api/users/routes');
@@ -19,8 +20,16 @@ const init = async () => {
 		},
 	});
 
-	await server.register(Jwt);
+	await server.register([
+		{
+			plugin: Jwt,
+		},
+		{
+			plugin: Bell,
+		},
+	]);
 
+	// Declare an authentication strategy using jwt scheme
 	server.auth.strategy('ocrapp_jwt', 'jwt', {
 		keys: process.env.ACCESS_TOKEN_KEY,
 		verify: {
@@ -35,6 +44,16 @@ const init = async () => {
 				id: artifacts.decoded.payload.id,
 			},
 		}),
+	});
+
+	// Declare an authentication strategy using Bell scheme
+	server.auth.strategy('google', 'bell', {
+		provider: 'google',
+		password: 'cookie_encryption_password_secure',
+		clientId: process.env.CLIENT_ID,
+		clientSecret: process.env.CLIENT_SECRET,
+		isSecure: process.env.NODE_ENV === 'production', // Terrible idea but required if not using HTTPS especially if developing locally
+		location: server.info.uri,
 	});
 
 	server.route(routesUsers);

@@ -24,6 +24,10 @@
   ACCESS_TOKEN_KEY=
   REFRESH_TOKEN_KEY=
   ACCESS_TOKEN_AGE=
+
+  # Google Auth
+  CLIENT_ID=
+  CLIENT_SECRET=
   ```
 
 - Running the server `npm run start-dev`

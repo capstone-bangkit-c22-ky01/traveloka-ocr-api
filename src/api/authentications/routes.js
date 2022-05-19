@@ -2,6 +2,7 @@ const {
 	postAuthenticationHandler,
 	putAuthenticationHandler,
 	deleteAuthenticationHandler,
+	getGoogleAuthenticationHandler,
 } = require('./handler');
 
 const routes = [
@@ -19,6 +20,14 @@ const routes = [
 		method: 'DELETE',
 		path: '/authentications',
 		handler: deleteAuthenticationHandler,
+	},
+	{
+		method: 'GET',
+		path: '/auth/google',
+		options: {
+			auth: 'google',
+			handler: getGoogleAuthenticationHandler,
+		},
 	},
 ];
 
