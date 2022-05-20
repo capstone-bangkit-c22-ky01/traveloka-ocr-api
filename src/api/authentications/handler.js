@@ -22,7 +22,7 @@ const verifyUserCredential = async (email, password) => {
 	const { id, password: hashedPassword } = result.rows[0];
 	const match = await bcrypt.compare(password, hashedPassword);
 	if (!match) {
-		throw AuthenticationError('The credentials you provided are wrong');
+		throw new AuthenticationError('The credentials you provided are wrong');
 	}
 
 	return id;
@@ -65,7 +65,7 @@ const postAuthenticationHandler = async (request, h) => {
 
 		const response = h.response({
 			status: 'success',
-			message: 'Authentication addess successfully',
+			message: 'Authentication success',
 			data: {
 				accessToken,
 				refreshToken,
@@ -137,7 +137,7 @@ const deleteAuthenticationHandler = async (request, h) => {
 
 		return {
 			status: 'success',
-			message: 'Refresh token has been deleted',
+			message: 'Authentications has been removed',
 		};
 	} catch (error) {
 		if (error instanceof ClientError) {
@@ -159,8 +159,60 @@ const deleteAuthenticationHandler = async (request, h) => {
 		return response;
 	}
 };
+
+// Google Auth
+const getGoogleAuthenticationHandler = async (request, h) => {
+	try {
+		if (request.auth.isAuthenticated) {
+			const token = request.auth.credentials;
+			const user = request.auth.credentials.profile.raw;
+
+			const dataUser = {
+				id: user.sub,
+				name: user.name,
+				picture: user.picture,
+				email: user.email,
+				email_verified: user.email_verified,
+			};
+
+			const data = {
+				token: token.token,
+				expiresIn: token.expiresIn,
+				profile: dataUser,
+			};
+
+			const response = h.response({
+				status: 'success',
+				message: 'Authentication success',
+				data,
+			});
+			response.code(201);
+			return response;
+		}
+	} catch (error) {
+		if (error instanceof ClientError) {
+			const response = h.response({
+				status: 'fail',
+				message: error.message,
+			});
+			response.code(error.statusCode);
+			return response;
+		}
+
+		// Server ERROR!
+		const response = h.response({
+			status: 'error',
+			message: 'Maaf, terjadi kegagalan pada server kami.',
+		});
+		response.code(500);
+		console.error(error);
+		return response;
+	}
+};
+
 module.exports = {
 	postAuthenticationHandler,
 	putAuthenticationHandler,
 	deleteAuthenticationHandler,
+	getGoogleAuthenticationHandler,
 };
