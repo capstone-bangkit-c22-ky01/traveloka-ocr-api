@@ -133,7 +133,7 @@
 
 ### Access Profile (Auth Requirment)
 
-- Profile (Manual Login)
+- Get Profile (Manual Auth)
   - method: `GET`
   - endpoint: `/users`
   - authorization:
@@ -148,7 +148,24 @@
         "name": "user name",
         "email": "email@gmail.com",
         "password": "$2b$10$tVdv2...",
-        "foto_profil": null or "http:alamat/foto-profil.png"
+        "foto_profil": null or "http:alamat/fotoprofile.png"
       }
     }
+    ```
+- Edit Profile (Manual Auth)
+  - method: `PUT`
+  - endpoint: `/users`
+  - authorization:
+    - type: `Bearer Token`,
+    - token: `accessToken`
+  - body request:
+    ```json
+    "name": "nama baru" | required,
+    "email": "email baru" | required,
+    "foto_profile": "fotoprofile.png" | nullable | max: 500kB | format : image (png, jpg, jpeg, etc)
+    ```
+  - body response:
+    ```json
+    "status": "success",
+    "message": "success updated profile"
     ```
