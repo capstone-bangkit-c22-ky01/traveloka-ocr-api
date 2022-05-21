@@ -8,7 +8,7 @@
 		"start-dev": "nodemon ./src/server.js",
 		"migrate": "node-pg-migrate"
 	},
-	"author": "C2-KY01",
+	"author": "C22-KY01",
 	"license": "ISC",
 	"dependencies": {
 		"@hapi/bell": "^12.3.0",
