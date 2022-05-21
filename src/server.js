@@ -3,6 +3,7 @@ require('dotenv').config();
 const Hapi = require('@hapi/hapi');
 const Jwt = require('@hapi/jwt');
 const Bell = require('@hapi/bell');
+const Inert = require('@hapi/inert');
 
 // users
 const routesUsers = require('./api/users/routes');
@@ -26,6 +27,9 @@ const init = async () => {
 		},
 		{
 			plugin: Bell,
+		},
+		{
+			plugin: Inert,
 		},
 	]);
 
@@ -52,7 +56,7 @@ const init = async () => {
 		password: 'cookie_encryption_password_secure',
 		clientId: process.env.CLIENT_ID,
 		clientSecret: process.env.CLIENT_SECRET,
-		isSecure: process.env.NODE_ENV === 'production', // Terrible idea but required if not using HTTPS especially if developing locally
+		isSecure: process.env.NODE_ENV === 'production',
 		location: server.info.uri,
 	});
 
