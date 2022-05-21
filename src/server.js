@@ -8,7 +8,9 @@ const Inert = require('@hapi/inert');
 // users
 const routesUsers = require('./api/users/routes');
 //authentications
-const authenticationsRoutes = require('./api/authentications/routes');
+const routesAuth = require('./api/authentications/routes');
+//ktpresults
+const routesKtpResults = require('./api/ktpresults/router');
 
 const init = async () => {
 	const server = Hapi.server({
@@ -61,7 +63,8 @@ const init = async () => {
 	});
 
 	server.route(routesUsers);
-	server.route(authenticationsRoutes);
+	server.route(routesAuth);
+	server.route(routesKtpResults);
 
 	await server.start();
 	console.log(`Server berjalan pada ${server.info.uri}`);
