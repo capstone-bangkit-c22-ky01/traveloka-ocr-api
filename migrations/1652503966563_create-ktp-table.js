@@ -4,7 +4,7 @@ exports.up = (pgm) => {
             type: 'VARCHAR(50)',
             primaryKey: true,
         },
-        image_name: {
+        image_url: {
             type: 'TEXT',
             notNull: true,
         },
