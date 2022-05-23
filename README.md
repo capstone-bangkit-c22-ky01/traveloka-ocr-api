@@ -33,6 +33,18 @@
 - migrate to the db `npm run migrate up`
 - Running the server `npm run start-dev`
 
+### Generate JWT Token
+
+- Access & Refresh Token
+  - In terminal/cmd type `node` then enter
+  - Type this code to generate token `require('crypto').randomBytes(64).toString('hex')`
+  - Copy the output and paste to the .env->ACCESS_TOkEN
+  - Repeat the sintax above to generate the second token, copy output and paste to .env->REFRESH_TOKEN
+
+### Get the Google ClientID & ClientSecret
+
+- Follow tutorial in this link :) [LINK TUTORIAL](https://www.balbooa.com/gridbox-documentation/how-to-get-google-client-id-and-client-secret)
+
 ---
 
 ## API
