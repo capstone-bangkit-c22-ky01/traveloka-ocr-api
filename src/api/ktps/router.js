@@ -1,7 +1,9 @@
+const { addImageKtp } = require('./handler');
+
 const routes = [
   {
     method: 'POST',
-    path: '/katepe',
+    path: '/ktp',
     options: {
       payload: {
         output: 'stream',
@@ -9,7 +11,7 @@ const routes = [
         multipart: true,
       },
     },
-    handler: '#',
+    handler: addImageKtp,
   },
 ];
 

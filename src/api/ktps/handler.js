@@ -60,7 +60,7 @@ async function storeFileUpload(file) {
 const addImageKtp = async (request, h) => {
     const { payload } = request;
     const id = nanoid(16);
-    const idUser = '';
+    const idUser = 'iduser';
     const imageUrl = await storeFileUpload(payload.file);
 
     //fill database
@@ -81,4 +81,5 @@ const addImageKtp = async (request, h) => {
     });
     response.code(201);
     return response;
-}
+};
+module.exports = { addImageKtp };
