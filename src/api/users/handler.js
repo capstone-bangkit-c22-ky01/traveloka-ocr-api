@@ -84,7 +84,7 @@ const getUserByAuthHandler = async (request, h) => {
 			throw new NotFoundError('User tidak ditemukan');
 		}
 
-		const dataUser = result.rows;
+		const dataUser = result.rows[0];
 		return {
 			status: 'success',
 			data: { user: dataUser },
