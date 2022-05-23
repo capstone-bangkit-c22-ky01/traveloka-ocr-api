@@ -45,7 +45,7 @@ const getKtpResultsByIdHandler = async (request, h) => {
 
 const editKtpResultByIdHandler = async (request, h) => {
   try {
-    const { id_ktpresult } = request.params
+    const { id_ktpresult } = request.params;
     const { title, name, nationality, nik, gender, marital_status } = request.payload;
     
     const query = {
