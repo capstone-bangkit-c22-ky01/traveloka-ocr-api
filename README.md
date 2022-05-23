@@ -143,7 +143,7 @@
     ```json
     "status": "success",
     "data": {
-      "user_id": {
+      "user": {
         "id": "users-randomidstring",
         "name": "user name",
         "email": "email@gmail.com",
