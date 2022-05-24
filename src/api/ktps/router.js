@@ -1,15 +1,21 @@
+const { addImageKtp } = require('./handler');
+
 const routes = [
   {
     method: 'POST',
-    path: '/katepe',
+    path: '/ktp',
     options: {
       payload: {
         output: 'stream',
         parse: true,
         multipart: true,
+        maxBytes: 1000 * 1000 * 3,
       },
+      auth: {
+				strategies: ['ocrapp_jwt', 'google'],
+			},
     },
-    handler: '#',
+    handler: addImageKtp,
   },
 ];
 
