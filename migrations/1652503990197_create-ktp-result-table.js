@@ -17,7 +17,7 @@ exports.up = (pgm) => {
       notNull: true,
     },
     nik: {
-			type: 'INTEGER',
+			type: 'BIGINT',
 			unique: true,
 			notNull: true,
     }, 
