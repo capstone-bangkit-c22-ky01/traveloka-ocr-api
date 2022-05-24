@@ -21,7 +21,7 @@ const storageRef = admin.storage().bucket('gs://travelokaocr.appspot.com');
 
 // Function to upload and store the file in firebase storage
 /* Fix : 1. FIXED Di firebase ktia bisa lihat picture yang sudah di up: karena tidak dapat access token sama seperti kalau di up dari firebase console 
-         2. File naming di firebase
+         2. FIXED File naming di firebase
 */
 async function uploadFile(path, filename) {
     const storage = await storageRef.upload(path, {
@@ -41,15 +41,24 @@ async function uploadFile(path, filename) {
 }
 
 // Function for storing the file locally before uploading it to the firebase storage
-/* Fix : 1. Harus ada file yg di upload. kalau kosong error
-         2. File yang di upload harus eksistensi image
+/* Fix : 1. FIXED Harus ada file yg di upload. kalau kosong error
+         2. FIXED File yang di upload harus eksistensi image
          3. File koordinat juga harus dipikirin how to
 */
-async function storeFileUpload(file) {
+async function storeFileUpload(file, h) {
     // **nama file asli
     const { filename } = file.hapi;
-    // **nama file custom
+
+    //** validasi image extension
     const ext = path.extname(filename);
+    const validExt = [ '.pdf', '.jpg', '.png', '.jpeg' ];
+    
+    if (validExt.indexOf(ext) == -1) {
+        console.error('Not allowed file type');
+        return error;
+    }
+    
+    // **nama file custom
     const filenameCustom = Date.now()+'ktp'+ ext;
     const data = file._data;
     const ktpFolder = './ktp';
