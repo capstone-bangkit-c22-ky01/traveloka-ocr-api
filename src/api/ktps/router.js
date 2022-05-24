@@ -9,7 +9,11 @@ const routes = [
         output: 'stream',
         parse: true,
         multipart: true,
+        maxBytes: 1000 * 1000 * 3,
       },
+      auth: {
+				strategies: ['ocrapp_jwt', 'google'],
+			},
     },
     handler: addImageKtp,
   },
