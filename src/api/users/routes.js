@@ -9,10 +9,8 @@ const routes = [
 	{
 		method: 'GET',
 		path: '/users',
-		options: {
-			auth: {
-				strategies: ['ocrapp_jwt', 'google'],
-			},
+		config: {
+			auth: 'ocrapp_jwt',
 			handler: getUserByAuthHandler,
 		},
 	},
@@ -21,7 +19,7 @@ const routes = [
 		path: '/users',
 		options: {
 			auth: {
-				strategies: ['ocrapp_jwt', 'google'],
+				strategy: 'ocrapp_jwt',
 			},
 			payload: {
 				allow: 'multipart/form-data',
