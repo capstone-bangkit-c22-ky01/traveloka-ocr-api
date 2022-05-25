@@ -143,7 +143,7 @@
     }
     ```
 
-### Access Profile (Auth Requirment)
+### Access Profile (Auth Requirement)
 
 - Profile (Manual Login)
   - method: `GET`
@@ -161,6 +161,26 @@
         "email": "email@gmail.com",
         "password": "$2b$10$tVdv2...",
         "foto_profil": null or "http:alamat/foto-profil.png"
+      }
+    }
+    ```
+
+### Scan and retrieve data from Card-id
+- Profile (Manual Login)
+  - method: `POST`
+  - endpoint: `/ktpresult`
+  - body response:
+    ```json
+    "status": "success",
+    "data": {
+      "user": {
+        "id_ktpresult": "randomidstring",
+        "title": "Ms",
+        "name": "Artia...",
+        "nationality": "Indonesia",
+        "nik": 1111111111111111,
+        "gender": "Female",
+        "marital_status": "Single"
       }
     }
     ```
