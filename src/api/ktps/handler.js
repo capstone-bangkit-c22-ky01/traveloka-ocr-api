@@ -49,7 +49,7 @@ async function storeFileUpload(file) {
 
     //** image extension validation
     const ext = path.extname(filename);
-    const validExt = [ '.pdf', '.jpg', '.png', '.jpeg' ];
+    const validExt = ['.jpg', '.png', '.jpeg' ];
     
     if (validExt.indexOf(ext) == -1) {
         console.error('Not allowed file type');
