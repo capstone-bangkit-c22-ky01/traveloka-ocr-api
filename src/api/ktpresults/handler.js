@@ -4,54 +4,54 @@ const InvariantError = require('../../exceptions/InvariantError');
 const NotFoundError = require('../../exceptions/NotFoundError');
 const ClientError = require('../../exceptions/ClientError');
 const { nanoid } = require('nanoid');
+const fs = require('fs');
 
 const pool = new Pool();
 
-var dummyResult = {
-  'name' : 'Nanami Kento',
-  'nationality' : 'Indonesia',
-  'nik' : 1212112121221112,
-  'gender' : 'Pria',
-  'marital_status' : 'Belum Kawin',
-  'id_ktp' : '12432'
-};
+function ktpResult() {
+  try {
+    // read ktp result data from json
+    const ktpResultJson = fs.readFileSync('../../outputKtpResult/dummyResult.json', 'utf-8');
+    const dataKtpResult = JSON.parse(ktpResultJson)
 
-var title, gender, marital_status;
+    if (dataKtpResult.marital_status.toUpperCase() == ' BELUM KAWIN') {
+      if (dataKtpResult.gender.toUpperCase() == 'PRIA') {
+        dataKtpResult.title = "Mr";
+      } else {
+        dataKtpResult.title = "Mr";
+      }
+    } else {
+      if (dataKtpResult.gender.toUpperCase() == 'PRIA') {
+        title = "Mr";
+      } else {
+        title = "Ms";
+      }
+    }
 
-if (dummyResult.marital_status.toUpperCase() == 'KAWIN') {
-  if (dummyResult.gender.toUpperCase() == 'PRIA') {
-    title = "Mr";
-  } else {
-    title = "Mrs";
+    if(dataKtpResult.gender.toUpperCase() == 'PRIA') {
+      dataKtpResult.gender = "Male";
+    } else {
+      dataKtpResult.gender = "Female";
+    }
+
+    if(dataKtpResult.marital_status.toUpperCase() == 'BELUM KAWIN') {
+      dataKtpResult.marital_status = "Single"
+    } else {
+      dataKtpResult.marital_status = "Married";
+    }
+
+    console.log(dataKtpResult)
+    return(dataKtpResult)
+    
+  } catch (error) {
+    console.log(error)
   }
-} else {
-  if (dummyResult.gender.toUpperCase() == 'PRIA') {
-    title = "Mr";
-  } else {
-    title = "Ms";
-  }
 }
-
-if(dummyResult.gender.toUpperCase() == 'PRIA') {
-  gender = "Male";
-} else {
-  gender = "Female";
-}
-
-if(dummyResult.marital_status.toUpperCase() == 'BELUM KAWIN') {
-  marital_status = "Single"
-} else {
-  marital_status = "Married";
-}
-
-dummyResult.title = title;
-dummyResult.gender = gender;
-dummyResult.marital_status =marital_status;
-
 
 const postKtpResult = async (request, h) => {
   try {
-    const {name, nationality, nik, gender, marital_status, title, id_ktp} = dummyResult;
+    ktpResult();
+    const {name, nationality, nik, gender, marital_status, title, id_ktp} = dataKtpResult;
     
     const id_ktpresult = nanoid(16);
     
