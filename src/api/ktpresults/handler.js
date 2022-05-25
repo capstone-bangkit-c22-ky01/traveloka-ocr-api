@@ -16,23 +16,38 @@ var dummyResult = {
   'id_ktp' : '12432'
 };
 
-var title;
+var title, gender, marital_status;
 
-if (dummyResult.marital_status == 'Kawin') {
-  if (dummyResult.gender == 'Pria') {
+if (dummyResult.marital_status.toUpperCase() == 'KAWIN') {
+  if (dummyResult.gender.toUpperCase() == 'PRIA') {
     title = "Mr";
   } else {
     title = "Mrs";
   }
 } else {
-  if (dummyResult.gender == 'Pria') {
+  if (dummyResult.gender.toUpperCase() == 'PRIA') {
     title = "Mr";
   } else {
     title = "Ms";
   }
 }
 
+if(dummyResult.gender.toUpperCase() == 'PRIA') {
+  gender = "Male";
+} else {
+  gender = "Female";
+}
+
+if(dummyResult.marital_status.toUpperCase() == 'BELUM KAWIN') {
+  marital_status = "Single"
+} else {
+  marital_status = "Married";
+}
+
 dummyResult.title = title;
+dummyResult.gender = gender;
+dummyResult.marital_status =marital_status;
+
 
 const postKtpResult = async (request, h) => {
   try {
@@ -41,7 +56,7 @@ const postKtpResult = async (request, h) => {
     const id_ktpresult = nanoid(16);
     
     const query = {
-      text: 'INSERT INTO ktpresults VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id_ktpresult',
+      text: 'INSERT INTO ktpresults VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
       values: [id_ktpresult, title, name, nationality, nik, gender, marital_status, id_ktp]
     };
     
@@ -49,15 +64,15 @@ const postKtpResult = async (request, h) => {
     if (!result.rows.length) {
       throw new InvariantError('Failed add ktpresult')
     }
-    
-    console.log(result);
+
     const dataKtp = result.rows;
     const response = h.response({
       status: 'success',
-      data: { user: dataKtp },
+      data: { dataKtp },
     })
     response.code(201);
 		return response;
+
   } catch (error) {
     if (error instanceof ClientError) {
 			const response = h.response({
