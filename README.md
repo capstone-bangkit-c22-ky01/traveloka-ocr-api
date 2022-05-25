@@ -143,7 +143,7 @@
     }
     ```
 
-### Access Profile (Auth Requirment)
+### Access Profile (Auth Requirement)
 
 - Profile (Manual Login)
   - method: `GET`
@@ -164,3 +164,63 @@
       }
     }
     ```
+
+### Insert ID Card Image (Auth Require)
+
+- Scan ID Card
+  - method: `POST`
+  - endpoint: `/ktp`
+  - authorization:
+    - type: `Bearer Token`,
+    - token: `accessToken`
+  - body request:
+    ```
+    * key: file
+    * value: `image/jpg` or `image/jpeg` or `image/png`
+    ```
+  - body response:
+    ```json
+     "status": "Success",
+     "message": "KTP image uccessfully added",
+     "data": {
+        "imageId": "wPnJ9TehHkm1JaZ4"
+     }
+
+- Re-scan ID Card (Retake Image)
+  - method: `PUT`
+  - endpoint: `/ktp`
+  - authorization:
+    - type: `Bearer Token`,
+    - token: `accessToken`
+  - body request:
+    ```
+    * key: file
+    * value: `image/jpg` or `image/jpeg` or `image/png`
+    ```
+  - body response:
+    ```json
+     "status": "Success",
+     "message": "Success retake new KTP Image"
+    ```
+
+### Scan and retrieve data from Card-id
+
+- Profile (Manual Login)
+  - method: `POST`
+  - endpoint: `/ktpresult`
+  - body response:
+    ```json
+    "status": "success",
+    "data": {
+      "user": {
+        "id_ktpresult": "randomidstring",
+        "title": "Ms",
+        "name": "Artia...",
+        "nationality": "Indonesia",
+        "nik": 1111111111111111,
+        "gender": "Female",
+        "marital_status": "Single"
+      }
+    }
+    ```
+    

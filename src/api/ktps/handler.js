@@ -4,9 +4,10 @@ const fs = require('fs');
 const { Pool } = require('pg');
 const { nanoid } = require('nanoid');
 const path = require('path');
-const pool = new Pool();
 const InvariantError = require('../../exceptions/InvariantError');
 const ClientError = require('../../exceptions/ClientError');
+
+const pool = new Pool();
 
 // Import creditions.json from firebase
 const serviceAccount = require('../../../travelokaocr-firebase-adminsdk-wsqmu-dcfd42eea8.json');
@@ -19,10 +20,11 @@ const admin = firebaseAdmin.initializeApp({
 // Set the bucket
 const storageRef = admin.storage().bucket('gs://travelokaocr.appspot.com');
 
+
+// Contain recent filename
+var recentFilename;
+
 // Function to upload and store the file in firebase storage
-/* Fix : 1. FIXED Di firebase ktia bisa lihat picture yang sudah di up: karena tidak dapat access token sama seperti kalau di up dari firebase console 
-         2. FIXED File naming di firebase
-*/
 async function uploadFile(path, filename) {
     const storage = await storageRef.upload(path, {
         public: true,
@@ -41,15 +43,11 @@ async function uploadFile(path, filename) {
 }
 
 // Function for storing the file locally before uploading it to the firebase storage
-/* Fix : 1. FIXED Harus ada file yg di upload. kalau kosong error
-         2. FIXED File yang di upload harus eksistensi image
-         3. File koordinat juga harus dipikirin how to
-*/
-async function storeFileUpload(file, h) {
+async function storeFileUpload(file) {
     // **nama file asli
     const { filename } = file.hapi;
 
-    //** validasi image extension
+    //** image extension validation
     const ext = path.extname(filename);
     const validExt = [ '.pdf', '.jpg', '.png', '.jpeg' ];
     
@@ -58,48 +56,55 @@ async function storeFileUpload(file, h) {
         return error;
     }
     
-    // **nama file custom
+    // **file custom name
     const filenameCustom = Date.now()+'ktp'+ ext;
+    recentFilename = filenameCustom;
     const data = file._data;
     const ktpFolder = './ktp';
 
-    // create the ktp folder
+    // create the ktp folder if doesnt exist
     if (!fs.existsSync(ktpFolder)) {
         fs.mkdirSync(ktpFolder);
     }
 
-    // ***** MASIH PERLU DIPERBAIKI *****
     fs.writeFile(`./ktp/${filenameCustom}`, data, (err) => {
         if(err) {
-            console.log(err);
-            return;
+            return error;
         }
-        console.log("selesai");
     });
 
     // call uploadFile function
     const imagePath = `./ktp/${filenameCustom}`;
-    const url = await uploadFile(imagePath, filenameCustom);
-    console.log("ini url: " + url);
-    return url;
+    return await uploadFile(imagePath, filenameCustom);
 }
 
-// handler function
+async function deletePrevFile(recentFilename) {
+    const path = `./ktp/${recentFilename}`;
+    // file removed from local storage
+    try {
+        fs.unlinkSync(path)
+    } catch(error) {
+        console.error(err)
+    }
+
+    // delete image from firebase storage
+    try {
+        await storageRef.file(`ktpimage/${recentFilename}`).delete();
+    } catch(error) {
+        console.error(err)
+    }
+}
+
+// handler function POST ktp
 const addImageKtp = async (request, h) => {
     try{
         const { payload } = request;
         const id = nanoid(16);
-       // const idUser = 'users-p7Q2osxKauwbfPzX';
         const { id:idUser } = request.auth.credentials;
-        // const idUser = idUr;
+        
         const imageUrl = await storeFileUpload(payload.file);
-
-        // Coba-coba
-        console.log("ini id: " + id);
-        console.log("ini url image : " + imageUrl);
-        console.log("ini id user: " + idUser);
     
-        //fill database
+        // fill the database
         const query = {
             text: 'INSERT INTO ktps VALUES($1, $2, $3) RETURNING id',
             values: [id, imageUrl, idUser],
@@ -140,6 +145,51 @@ const addImageKtp = async (request, h) => {
         return response;
     }
 };
-//untuk put siapkan global variabel yg bisa simpan namafilenya untuk keperluan delete
 
-module.exports = { addImageKtp };
+// handler PUT ktp
+const replaceImageKtp = async (request, h) => {
+    deletePrevFile(recentFilename);
+
+    try{
+        const { payload } = request;
+        const { id:idUser } = request.auth.credentials;
+        const imageUrl = await storeFileUpload(payload.file);
+    
+        const query = {
+            text: 'UPDATE ktps SET image_url = $1 WHERE id_user =$2 RETURNING id',
+            values: [imageUrl, idUser],
+        };
+    
+        const result = await pool.query(query);
+        if(!result.rows.length) {
+            throw new InvariantError('Failed to add new KTP image')
+        }
+
+        const response = h.response({
+            status: 'Success',
+            message: 'Success retake new KTP Image',
+        });
+        response.code(201);
+        return response;
+    } catch(error){
+        if (error instanceof ClientError) {
+            const response = h.response({
+                status: 'failed',
+                message: error.message,
+            });
+            response.code(error.statusCode);
+            return response;
+        }
+
+        // Server error
+        const response = h.response({
+            status: 'error',
+            message: 'Sorry, there was a failure on our server.',
+        });
+        response.code(500);
+        console.error(error);
+        return response;
+    }
+};
+
+module.exports = { addImageKtp, replaceImageKtp };
