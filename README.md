@@ -119,13 +119,9 @@
 ---- **_Google_** ----
 
 - Login
-  - method: `POST`,
+  - method: `GET`,
   - endpoint: `/auth/google`
-  - body request: (login with pop up google account)
-    ```json
-    "email": string, email | required
-    "password": string | required
-    ```
+  - _login with pop up google account_
   - body response:
     ```json
     "status": "success",
