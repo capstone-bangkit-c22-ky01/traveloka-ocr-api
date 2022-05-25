@@ -49,9 +49,9 @@
 
 ## API
 
-### Authentication User (Use JWT)
+### Authentication User
 
----- **_Manual_** ----
+---- **_Manual_ (Use JWT)** ----
 
 - Register
   - method: `POST`
@@ -121,7 +121,7 @@
 - Login
   - method: `POST`,
   - endpoint: `/auth/google`
-  - body request:
+  - body request: (login with pop up google account)
     ```json
     "email": string, email | required
     "password": string | required
@@ -131,17 +131,11 @@
     "status": "success",
     "message": "Authentication success",
     "data": {
-      "token": "ya29.a0A...",
-      "expiresIn": 3598,
-        "profile": {
-            "id": "112...",
-            "name": "Maish",
-            "picture": "https://lh3.googleusercontent.com/a/AA...",
-            "email": "email@gmail.com",
-            "email_verified": true
-        }
+        "accessToken": "eyJhbG...",
+        "refreshToken": "eyJhb..."
     }
     ```
+- Update access token & logout **Same as JWT Auth**
 
 ### Access Profile (Auth Requirement)
 
@@ -168,6 +162,7 @@
 ### Insert ID Card Image (Auth Require)
 
 - Scan ID Card
+
   - method: `POST`
   - endpoint: `/ktp`
   - authorization:
@@ -185,6 +180,7 @@
      "data": {
         "imageId": "wPnJ9TehHkm1JaZ4"
      }
+    ```
 
 - Re-scan ID Card (Retake Image)
   - method: `PUT`
@@ -223,4 +219,3 @@
       }
     }
     ```
-    
