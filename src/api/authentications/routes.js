@@ -25,7 +25,9 @@ const routes = [
 		method: 'GET',
 		path: '/auth/google',
 		options: {
-			auth: 'google',
+			auth: {
+				strategy: 'google',
+			},
 			handler: getGoogleAuthenticationHandler,
 		},
 	},
