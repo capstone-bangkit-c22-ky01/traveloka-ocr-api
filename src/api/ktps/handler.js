@@ -20,9 +20,10 @@ const admin = firebaseAdmin.initializeApp({
 // Set the bucket
 const storageRef = admin.storage().bucket('gs://travelokaocr.appspot.com');
 
-
 // Contain recent filename
-var recentFilename;
+let allName;
+// let recentImageName;
+// let recentJsonName;
 
 // Function to upload and store the file in firebase storage
 async function uploadFile(path, filename) {
@@ -35,8 +36,12 @@ async function uploadFile(path, filename) {
             }
         },
     });
+    //THIS WILL RETURN THE IMAGE LOCATION
+    const imageLocation = `gs://travelokaocr.appspot.com/ktpimage/${filename}`;
+    return imageLocation
+    
     //THIS RETURN A LINK TO DOWNLOAD THE PHOTO
-    return storage[0].metadata.mediaLink;
+    // return storage[0].metadata.mediaLink;
     
     //THIS RETURN A LINK TO SEE THE PHOTO
     //return storage[0].getSignedUrl({ action: 'read', expires: '03-09-2491' });
@@ -49,16 +54,16 @@ async function storeFileUpload(file) {
 
     //** image extension validation
     const ext = path.extname(filename);
-    const validExt = [ '.pdf', '.jpg', '.png', '.jpeg' ];
+    const validExt = [ '.jpg', '.png', '.jpeg' ];
     
     if (validExt.indexOf(ext) == -1) {
-        console.error('Not allowed file type');
-        return error;
+        throw new InvariantError('Not allowed file type');
     }
     
     // **file custom name
-    const filenameCustom = Date.now()+'ktp'+ ext;
-    recentFilename = filenameCustom;
+    const filenameCustom = allName +'ktp'+ ext;
+    // recentImageName = filenameCustom;
+;
     const data = file._data;
     const ktpFolder = './ktp';
 
@@ -78,21 +83,55 @@ async function storeFileUpload(file) {
     return await uploadFile(imagePath, filenameCustom);
 }
 
-async function deletePrevFile(recentFilename) {
-    const path = `./ktp/${recentFilename}`;
+// Function for deleting the previous files
+async function deletePrevFile(imageName, jsonName) {
+    const path1 = `./ktp/${imageName}`;
+    const path2 = `./ktp/${jsonName}`;
     // file removed from local storage
     try {
-        fs.unlinkSync(path)
+        fs.unlinkSync(path1);
+        fs.unlinkSync(path2);
+        console.log("Delete Local sukses");
     } catch(error) {
-        console.error(err)
+        console.log(error);
+        throw new InvariantError('Eror hapus lokal file');
     }
 
     // delete image from firebase storage
     try {
-        await storageRef.file(`ktpimage/${recentFilename}`).delete();
+        await storageRef.file(`ktpimage/${imageName}`).delete();
+        await storageRef.file(`ktpimage/${jsonName}`).delete();
+        console.log("Delete firebase sukses");
     } catch(error) {
-        console.error(err)
+        console.error(err);
+        throw new InvariantError('Eror hapus firebase file');
     }
+}
+
+// Function for getting and writing coordinates into file.json
+async function writeCoordinates(dataClassString, imageUrl){
+
+    // mengubah string dataClass menjadi object
+    const dataClassObject = JSON.parse(dataClassString);
+
+    // Menambahkan data lokasi gambar
+    dataClassObject.image = imageUrl;
+
+    // Mengubah dataobject menjadi datastring json
+    const newDataClassString = JSON.stringify(dataClassObject, null, 2);
+
+    // Write newdatastring to file.json
+
+    const filenameCustom = allName +'ktp.json';
+    // recentJsonName = filenameCustom;
+
+    fs.writeFileSync(`./ktp/${filenameCustom}`, newDataClassString);
+
+    const jsonPath = `./ktp/${filenameCustom}`;
+    uploadFile(jsonPath, filenameCustom);
+
+    // cek aja
+    return console.log('File Stringg.json berhasil dibuat');
 }
 
 // handler function POST ktp
@@ -102,19 +141,23 @@ const addImageKtp = async (request, h) => {
         const id = nanoid(16);
         const { id:idUser } = request.auth.credentials;
         
+        allName = Date.now();
+        
         const imageUrl = await storeFileUpload(payload.file);
-    
+        
         // fill the database
         const query = {
             text: 'INSERT INTO ktps VALUES($1, $2, $3) RETURNING id',
             values: [id, imageUrl, idUser],
         };
-    
+        
         const result = await pool.query(query);
         if(!result.rows.length) {
             throw new InvariantError('Failed to add KTP image')
         }
-
+        
+        writeCoordinates(payload.data, imageUrl);
+        
         const imageId = result.rows[0].id;
         const response = h.response({
             status: 'Success',
@@ -148,11 +191,24 @@ const addImageKtp = async (request, h) => {
 
 // handler PUT ktp
 const replaceImageKtp = async (request, h) => {
-    deletePrevFile(recentFilename);
 
     try{
         const { payload } = request;
         const { id:idUser } = request.auth.credentials;
+
+        allName = Date.now();
+
+        const queryGet = {
+            text: 'SELECT image_url FROM ktps WHERE id_user = $1',
+            values: [idUser],
+        };
+
+        const getKtpUrl = await pool.query(queryGet);
+        const imageName = (getKtpUrl.rows[0].image_url).substr(39);
+        const jsonName = (getKtpUrl.rows[0].image_url).slice(39,55) + ".json";
+
+        deletePrevFile(imageName, jsonName);
+
         const imageUrl = await storeFileUpload(payload.file);
     
         const query = {
@@ -164,6 +220,8 @@ const replaceImageKtp = async (request, h) => {
         if(!result.rows.length) {
             throw new InvariantError('Failed to add new KTP image')
         }
+
+        writeCoordinates(payload.data, imageUrl);
 
         const response = h.response({
             status: 'Success',
@@ -191,5 +249,7 @@ const replaceImageKtp = async (request, h) => {
         return response;
     }
 };
+
+
 
 module.exports = { addImageKtp, replaceImageKtp };
