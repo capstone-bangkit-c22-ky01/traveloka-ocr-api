@@ -8,50 +8,57 @@ const fs = require('fs');
 
 const pool = new Pool();
 
-function ktpResult() {
-  try {
-    // read ktp result data from json
-    const ktpResultJson = fs.readFileSync('../../outputKtpResult/dummyResult.json', 'utf-8');
-    const dataKtpResult = JSON.parse(ktpResultJson)
+function ktpResult () {
+  let dataKtpResult;
+  fs.readFile('src/outputKtpResult/dummyResult.json', 'utf-8', (error, data) => {
+    if(error){
+      console.log(error)
+      return;
+    }
 
-    if (dataKtpResult.marital_status.toUpperCase() == ' BELUM KAWIN') {
+    dataKtpResult = JSON.parse(data);
+    let title = "Mr";
+
+    if (dataKtpResult.marital_status.toUpperCase() == 'BELUM KAWIN') {
       if (dataKtpResult.gender.toUpperCase() == 'PRIA') {
-        dataKtpResult.title = "Mr";
-      } else {
-        dataKtpResult.title = "Mr";
-      }
-    } else {
-      if (dataKtpResult.gender.toUpperCase() == 'PRIA') {
-        title = "Mr";
+        dataKtpResult.title = title;
+        dataKtpResult.gender = "Male";
       } else {
         title = "Ms";
+        dataKtpResult.title = title;
+        dataKtpResult.gender = "Female";
       }
-    }
-
-    if(dataKtpResult.gender.toUpperCase() == 'PRIA') {
-      dataKtpResult.gender = "Male";
-    } else {
-      dataKtpResult.gender = "Female";
-    }
-
-    if(dataKtpResult.marital_status.toUpperCase() == 'BELUM KAWIN') {
       dataKtpResult.marital_status = "Single"
     } else {
+      if (dataKtpResult.gender.toUpperCase() == 'PRIA') {
+        dataKtpResult.gender = "Male";
+        dataKtpResult.title = title;
+      } else {
+        title = "Mrs";
+        dataKtpResult.title = title;
+        dataKtpResult.gender = "Female";
+      }
       dataKtpResult.marital_status = "Married";
     }
 
+    console.log('===========line44')
     console.log(dataKtpResult)
-    return(dataKtpResult)
     
-  } catch (error) {
-    console.log(error)
-  }
+  })
+  console.log('===========line49')
+  console.log(dataKtpResult)
+  return dataKtpResult
 }
 
+const dataKtpJson = ktpResult()
+
 const postKtpResult = async (request, h) => {
+  
   try {
-    ktpResult();
-    const {name, nationality, nik, gender, marital_status, title, id_ktp} = dataKtpResult;
+    const dataKtpResult = dataKtpJson;
+    console.log('line56=========')
+    console.log(dataKtpResult);
+    const {name, nationality, nik, gender, marital_status, id_ktp, title} = dataKtpResult;
     
     const id_ktpresult = nanoid(16);
     
@@ -68,30 +75,31 @@ const postKtpResult = async (request, h) => {
     const dataKtp = result.rows;
     const response = h.response({
       status: 'success',
-      data: { dataKtp },
+      data: { dataKtpResult },
     })
     response.code(201);
-		return response;
+    return response;
 
   } catch (error) {
     if (error instanceof ClientError) {
-			const response = h.response({
-				status: 'fail',
-				message: error.message,
-			});
-			response.code(error.statusCode);
-			return response;
-		}
+      const response = h.response({
+        status: 'fail',
+        message: error.message,
+      });
+      response.code(error.statusCode);
+      return response;
+    }
 
-		// Server ERROR!
-		const response = h.response({
-			status: 'error',
-			message: 'Sorry, our server are busy. Please, try again later.',
-		});
-		response.code(500);
-		console.error(error);
-		return response;
+    // Server ERROR!
+    const response = h.response({
+      status: 'error',
+      message: 'Sorry, our server are busy. Please, try again later.',
+    });
+    response.code(500);
+    console.error(error);
+    return response;
   }
+
 };
 
 
