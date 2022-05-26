@@ -1,8 +1,7 @@
 {
-  "name" : "Nanami Kento",
-  "nationality" : "Indonesia",
-  "nik" : 1212112121221112,
-  "gender" : "Wanita",
-  "marital_status" : "Kawin",
-  "id_ktp" : "12432"
+	"nik": 1212112121221112,
+	"name": "Nanami Kento",
+	"sex": "Perempuan",
+	"married": "Kawin",
+	"nationality": "Indonesia"
 }
