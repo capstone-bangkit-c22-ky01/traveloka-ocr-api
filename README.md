@@ -195,23 +195,29 @@
      "message": "Success retake new KTP Image"
     ```
 
-### Scan and retrieve data from Card-id
+### Scan and retrieve data from Card-id (Auth Require)
 
-- Profile (Manual Login)
-  - method: `POST`
+- Get retrieved data from model OCR
+  - method: `GET`
   - endpoint: `/ktpresult`
   - body response:
     ```json
     "status": "success",
     "data": {
-      "user": {
-        "id_ktpresult": "randomidstring",
-        "title": "Ms",
+        "nik": 0000000000000000,
         "name": "Artia...",
+        "sex": "Female",
+        "married": "Single",
         "nationality": "Indonesia",
-        "nik": 1111111111111111,
-        "gender": "Female",
-        "marital_status": "Single"
-      }
+        "title": "Ms"
     }
+    ```
+
+- Add retrieved data to database
+  - method: `POST`
+  - endpoint: `/ktpresult`
+  - body response:
+    ```json
+    "status": "success",
+    "message" : "Successfuly added to Database"
     ```
