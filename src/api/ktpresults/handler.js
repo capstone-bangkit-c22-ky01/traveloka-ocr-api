@@ -4,77 +4,89 @@ const InvariantError = require('../../exceptions/InvariantError');
 const NotFoundError = require('../../exceptions/NotFoundError');
 const ClientError = require('../../exceptions/ClientError');
 const { nanoid } = require('nanoid');
-const fs = require('fs');
+const fs = require('fs/promises');
 
 const pool = new Pool();
 
-function ktpResult() {
-  try {
-    // read ktp result data from json
-    const ktpResultJson = fs.readFileSync('../../outputKtpResult/dummyResult.json', 'utf-8');
-    const dataKtpResult = JSON.parse(ktpResultJson)
+const getKtpResult = async (request, h) => {
+	try {
+		const dataKtpResult = await fs.readFile('src/outputKtpResult/dummyResult.json', {
+			encoding: 'utf-8',
+		});
+		const data = JSON.parse(dataKtpResult);
 
-    if (dataKtpResult.marital_status.toUpperCase() == ' BELUM KAWIN') {
-      if (dataKtpResult.gender.toUpperCase() == 'PRIA') {
-        dataKtpResult.title = "Mr";
-      } else {
-        dataKtpResult.title = "Mr";
-      }
-    } else {
-      if (dataKtpResult.gender.toUpperCase() == 'PRIA') {
-        title = "Mr";
-      } else {
-        title = "Ms";
-      }
-    }
+		let title = 'Mr';
+		if (data.sex.toLowerCase() === 'perempuan' && data.married === 'kawin') {
+			title = 'Mrs';
+			data.sex = 'Female';
+			data.married = 'Married';
+		} else if (data.sex.toLowerCase() === 'perempuan' && data.married !== 'kawin') {
+			title = 'Ms';
+			data.sex = 'Female';
+			data.married = 'Single';
+		} else if (data.sex.toLowerCase() === 'laki-laki' && data.married === 'kawin') {
+			data.sex = 'Male';
+			data.married = 'Married';
+		} else {
+			data.sex = 'Male';
+			data.married = 'Single';
+		}
 
-    if(dataKtpResult.gender.toUpperCase() == 'PRIA') {
-      dataKtpResult.gender = "Male";
-    } else {
-      dataKtpResult.gender = "Female";
-    }
+		dataKtp = {
+			...data,
+			title,
+		};
 
-    if(dataKtpResult.marital_status.toUpperCase() == 'BELUM KAWIN') {
-      dataKtpResult.marital_status = "Single"
-    } else {
-      dataKtpResult.marital_status = "Married";
-    }
+		const response = h.response({
+			status: 'success',
+			data: dataKtp,
+		});
+		response.code(201);
+		return response;
+	} catch (error) {
+		if (error instanceof ClientError) {
+			const response = h.response({
+				status: 'fail',
+				message: error.message,
+			});
+			response.code(error.statusCode);
+			return response;
+		}
 
-    console.log(dataKtpResult)
-    return(dataKtpResult)
-    
-  } catch (error) {
-    console.log(error)
-  }
-}
+		// Server ERROR!
+		const response = h.response({
+			status: 'error',
+			message: 'Sorry, there was a failure on our server.',
+		});
+		response.code(500);
+		console.error(error);
+		return response;
+	}
+};
 
 const postKtpResult = async (request, h) => {
-  try {
-    ktpResult();
-    const {name, nationality, nik, gender, marital_status, title, id_ktp} = dataKtpResult;
-    
-    const id_ktpresult = nanoid(16);
-    
-    const query = {
-      text: 'INSERT INTO ktpresults VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-      values: [id_ktpresult, title, name, nationality, nik, gender, marital_status, id_ktp]
-    };
-    
-    const result = await pool.query(query);
-    if (!result.rows.length) {
-      throw new InvariantError('Failed add ktpresult')
-    }
+	try {
+		const id_ktpresult = nanoid(16);
 
-    const dataKtp = result.rows;
-    const response = h.response({
-      status: 'success',
-      data: { dataKtp },
-    })
-    response.code(201);
+		const query = {
+			text: 'INSERT INTO ktpresults VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+			values: [id_ktpresult, title, name, nationality, nik, gender, marital_status, id_ktp],
+		};
+
+		const result = await pool.query(query);
+		if (!result.rows.length) {
+			throw new InvariantError('Failed add ktpresult');
+		}
+
+		const dataKtp = result.rows;
+		const response = h.response({
+			status: 'success',
+			data: { dataKtpResult },
+		});
+		response.code(201);
 		return response;
-
-  } catch (error) {
-    if (error instanceof ClientError) {
+	} catch (error) {
+		if (error instanceof ClientError) {
 			const response = h.response({
 				status: 'fail',
 				message: error.message,
@@ -91,8 +103,7 @@ const postKtpResult = async (request, h) => {
 		response.code(500);
 		console.error(error);
 		return response;
-  }
+	}
 };
 
-
-module.exports = { postKtpResult };
+module.exports = { postKtpResult, getKtpResult };

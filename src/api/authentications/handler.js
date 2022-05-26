@@ -28,6 +28,18 @@ const verifyUserCredential = async (email, password) => {
 	return id;
 };
 
+const userEmailExist = async (email) => {
+	const query = {
+		text: 'SELECT * FROM users WHERE email = $1',
+		values: [email],
+	};
+	const result = await pool.query(query);
+	if (!result.rows.length) {
+		return false;
+	}
+	return true;
+};
+
 const verifyRefreshToken = async (token) => {
 	const query = {
 		text: 'SELECT token FROM authentications WHERE token = $1',
@@ -164,27 +176,55 @@ const deleteAuthenticationHandler = async (request, h) => {
 const getGoogleAuthenticationHandler = async (request, h) => {
 	try {
 		if (request.auth.isAuthenticated) {
-			const token = request.auth.credentials;
 			const user = request.auth.credentials.profile.raw;
+			const id = request.auth.credentials.profile.id;
 
-			const dataUser = {
-				id: user.sub,
-				name: user.name,
-				picture: user.picture,
-				email: user.email,
-				email_verified: user.email_verified,
+			const accessToken = TokenManager.generateAccessToken({ id });
+			const refreshToken = TokenManager.generateRefreshToken({ id });
+
+			const existEmail = await userEmailExist(user.email);
+			if (existEmail === false) {
+				// Input users
+				const queryUser = {
+					text: 'INSERT INTO users VALUES($1, $2, $3, $4, $5) RETURNING id',
+					values: [id, user.name, user.email, '', user.picture],
+				};
+				const resultUser = await pool.query(queryUser);
+				if (!resultUser.rows.length) {
+					throw new InvariantError('Failed to add user');
+				}
+				// Create Auth
+				const queryAuth = {
+					text: 'INSERT INTO authentications VALUES($1)',
+					values: [refreshToken],
+				};
+				await pool.query(queryAuth);
+				const response = h.response({
+					status: 'success',
+					message: 'Authentication success',
+					data: {
+						accessToken,
+						refreshToken,
+					},
+				});
+				response.code(201);
+				return response;
+			}
+
+			// if exist email is true
+			// Create Auth
+			const query = {
+				text: 'INSERT INTO authentications VALUES($1)',
+				values: [refreshToken],
 			};
-
-			const data = {
-				token: token.token,
-				expiresIn: token.expiresIn,
-				profile: dataUser,
-			};
-
+			await pool.query(query);
 			const response = h.response({
 				status: 'success',
 				message: 'Authentication success',
-				data,
+				data: {
+					accessToken,
+					refreshToken,
+				},
 			});
 			response.code(201);
 			return response;
