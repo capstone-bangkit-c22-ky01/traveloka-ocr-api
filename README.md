@@ -158,7 +158,6 @@
 ### Insert ID Card Image (Auth Require)
 
 - Scan ID Card
-
   - method: `POST`
   - endpoint: `/ktp`
   - authorization:
