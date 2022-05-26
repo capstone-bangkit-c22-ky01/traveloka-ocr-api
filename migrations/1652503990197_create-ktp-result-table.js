@@ -1,5 +1,5 @@
 exports.up = (pgm) => {
-  pgm.createTable('ktpresults', {
+  pgm.createTable('ktpresults',  {
     id: {
 			type: 'VARCHAR(50)',
 			primaryKey: true,
