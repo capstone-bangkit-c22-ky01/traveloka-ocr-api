@@ -66,11 +66,19 @@ const getKtpResult = async (request, h) => {
 
 const postKtpResult = async (request, h) => {
 	try {
-		const id_ktpresult = nanoid(16);
+    const { name, nationality,title, nik, sex, married } = request.payload;
+		const { id:idUsers } = request.auth.credentials;
+		const id = nanoid(16);
+
+		const queryKtp = {
+			text: 'SELECT id FROM ktps WHERE id_user = $1',
+			values: [idUsers]
+		}
+		const idKtp = await pool.query(queryKtp);
 
 		const query = {
 			text: 'INSERT INTO ktpresults VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-			values: [id_ktpresult, title, name, nationality, nik, gender, marital_status, id_ktp],
+			values: [id, title, name, nationality, nik, sex, married, idKtp.rows[0].id],
 		};
 
 		const result = await pool.query(query);
@@ -78,10 +86,9 @@ const postKtpResult = async (request, h) => {
 			throw new InvariantError('Failed add ktpresult');
 		}
 
-		const dataKtp = result.rows;
 		const response = h.response({
 			status: 'success',
-			data: { dataKtpResult },
+			message : 'Successfuly added to Database'
 		});
 		response.code(201);
 		return response;
