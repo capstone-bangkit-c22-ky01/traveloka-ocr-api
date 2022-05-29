@@ -153,6 +153,17 @@ const addImageKtp = async (request, h) => {
         // Checking the ktps tabel rows
         if(Object.keys(checkRow.rows).length !== 0){
 
+            const queryGet = {
+                text: 'SELECT image_url FROM ktps WHERE id_user = $1',
+                values: [idUser],
+            };
+    
+            const getKtpUrl = await pool.query(queryGet);
+            const imageName = (getKtpUrl.rows[0].image_url).substr(39);
+            const jsonName = (getKtpUrl.rows[0].image_url).slice(39,55) + ".json";
+    
+            deletePrevFile(imageName, jsonName);
+
             // If Delete
             const queryDelete = {
                 text: 'DELETE from ktps WHERE id_user = $1',
@@ -161,6 +172,7 @@ const addImageKtp = async (request, h) => {
             await pool.query(queryDelete);
             console.log("Udah dihapus row-nya");
         };
+
         const imageUrl = await storeFileUpload(payload.file);
         
         // fill the database
