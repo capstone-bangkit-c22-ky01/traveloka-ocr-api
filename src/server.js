@@ -9,6 +9,8 @@ const Inert = require('@hapi/inert');
 const routesUsers = require('./api/users/routes');
 // authentications
 const routesAuth = require('./api/authentications/routes');
+// flights
+const routeFlights = require('./api/flights/routes');
 // ktpresults
 const routesKtpResults = require('./api/ktpresults/router');
 // ktps
@@ -66,6 +68,7 @@ const init = async () => {
 
 	server.route(routesUsers);
 	server.route(routesAuth);
+	server.route(routeFlights);
 	server.route(routesKtpResults);
 	// server.route(routesKtps);
 
