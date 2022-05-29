@@ -158,6 +158,15 @@
   }
   ```
 
+### Access feature with Unauthorize user
+
+- body response:
+  ```json
+  "statusCode": 401,
+  "error": "Unauthorized",
+  "message": "Missing authentication"
+  ```
+
 ### Access Profile (Auth Requirement)
 
 - Profile (Manual Login)
