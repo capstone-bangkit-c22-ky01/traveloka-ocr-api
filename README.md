@@ -239,6 +239,11 @@
   - authorization:
     - type: `Bearer Token`,
     - token: `accessToken`
+  - body request:
+    ```json
+    "id": 6552627,
+    ```
+    \*note: id request is id flight
   - body response:
     ```json
     "status": "success",
