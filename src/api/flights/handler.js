@@ -107,7 +107,7 @@ const getBookingByUserIdHandler = async (request, h) => {
 		return {
 			status: 'success',
 			data: {
-				booking: bookings.map((booking) => ({
+				bookings: bookings.map((booking) => ({
 					id: booking.id,
 					departure: booking.departure,
 					destination: booking.destination,
