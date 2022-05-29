@@ -207,6 +207,32 @@
       ]
     }
     ```
+- Get Flights using Filters
+  - method: `GET`
+  - endpoint: `/flights?departure=jakarta&destination=bali`  
+    will be filter from jakarta to bali
+  - authorization:
+    - type: `Bearer Token`,
+    - token: `accessToken`
+  - body response:
+    ```json
+    "status": "success",
+    "data": {
+      "flights": [
+        {
+          "id": "19629969",
+          "airline": "Sriwijaya",
+          "icon": "https://ik.imagekit.io/tvlk...",
+          "depart_time": "14:20",
+          "arrival_time": "20:50",
+          "departure": "Jakarta",
+          "destination": "Bali",
+          "price": 2374000
+        },
+        {...}
+      ]
+    }
+    ```
 - Post Booking
   - method: `POST`
   - endpoint: `/flights/booking`
