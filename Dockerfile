@@ -1,7 +1,11 @@
 FROM node:16
-WORKDIR /src/app
+
+RUN mkdir -p /home/app
+
 COPY package*.json ./
+
 RUN npm install
-COPY . .
-EXPOSE 5000
-CMD ["node", "src/server.js"]
+ 
+COPY . /home/app
+
+CMD ["node", "/home/app/src/server.js"]
