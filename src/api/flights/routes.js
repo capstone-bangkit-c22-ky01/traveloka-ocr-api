@@ -9,7 +9,12 @@ const routes = [
 	{
 		method: 'GET',
 		path: '/flights',
-		handler: getFlightsHandler,
+		options: {
+			auth: {
+				strategy: 'ocrapp_jwt',
+			},
+			handler: getFlightsHandler,
+		},
 	},
 	{
 		method: 'POST',
