@@ -127,7 +127,7 @@ const putUserByAuthHandler = async (request, h) => {
 			await pool.query(query);
 
 			const response = h.response({
-				stats: 'success',
+				status: 'success',
 				message: 'Success updated profile',
 			});
 			response.code(200);

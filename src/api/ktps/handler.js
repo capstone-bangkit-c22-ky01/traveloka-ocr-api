@@ -10,7 +10,7 @@ const ClientError = require('../../exceptions/ClientError');
 const pool = new Pool();
 
 // Import creditions.json from firebase
-const serviceAccount = require('../../../travelokaocr-firebase-adminsdk-wsqmu-dcfd42eea8.json');
+const serviceAccount = require('../../../traveloka-ocr-firebase-adminsdk-5avyv-0bad59c40a.json');
 
 // Initialize App
 const admin = firebaseAdmin.initializeApp({
@@ -18,12 +18,9 @@ const admin = firebaseAdmin.initializeApp({
 });
 
 // Set the bucket
-const storageRef = admin.storage().bucket('gs://travelokaocr.appspot.com');
+const storageRef = admin.storage().bucket('gs://traveloka-ocr.appspot.com');
 
-// Contain recent filename
 let allName;
-// let recentImageName;
-// let recentJsonName;
 
 // Function to upload and store the file in firebase storage
 async function uploadFile(path, filename) {
@@ -37,14 +34,8 @@ async function uploadFile(path, filename) {
         },
     });
     //THIS WILL RETURN THE IMAGE LOCATION
-    const imageLocation = `gs://travelokaocr.appspot.com/ktpimage/${filename}`;
+    const imageLocation = `gs://traveloka-ocr.appspot.com/ktpimage/${filename}`;
     return imageLocation
-    
-    //THIS RETURN A LINK TO DOWNLOAD THE PHOTO
-    // return storage[0].metadata.mediaLink;
-    
-    //THIS RETURN A LINK TO SEE THE PHOTO
-    //return storage[0].getSignedUrl({ action: 'read', expires: '03-09-2491' });
 }
 
 // Function for storing the file locally before uploading it to the firebase storage
@@ -62,7 +53,6 @@ async function storeFileUpload(file) {
     
     // **file custom name
     const filenameCustom = allName +'ktp'+ ext;
-    // recentImageName = filenameCustom;
 ;
     const data = file._data;
     const ktpFolder = './ktp';
@@ -91,47 +81,33 @@ async function deletePrevFile(imageName, jsonName) {
     try {
         fs.unlinkSync(path1);
         fs.unlinkSync(path2);
-        console.log("Delete Local sukses");
     } catch(error) {
-        console.log(error);
-        throw new InvariantError('Eror hapus lokal file');
+        throw new InvariantError('Failed to delete the file locally');
     }
 
     // delete image from firebase storage
     try {
         await storageRef.file(`ktpimage/${imageName}`).delete();
         await storageRef.file(`ktpimage/${jsonName}`).delete();
-        console.log("Delete firebase sukses");
     } catch(error) {
         console.error(err);
-        throw new InvariantError('Eror hapus firebase file');
+        throw new InvariantError('Failed to delete the files in the server');
     }
 }
 
 // Function for getting and writing coordinates into file.json
 async function writeCoordinates(dataClassString, imageUrl){
 
-    // mengubah string dataClass menjadi object
     const dataClassObject = JSON.parse(dataClassString);
-
-    // Menambahkan data lokasi gambar
     dataClassObject.image = imageUrl;
-
-    // Mengubah dataobject menjadi datastring json
     const newDataClassString = JSON.stringify(dataClassObject, null, 2);
 
-    // Write newdatastring to file.json
-
     const filenameCustom = allName +'ktp.json';
-    // recentJsonName = filenameCustom;
 
     fs.writeFileSync(`./ktp/${filenameCustom}`, newDataClassString);
 
     const jsonPath = `./ktp/${filenameCustom}`;
     uploadFile(jsonPath, filenameCustom);
-
-    // cek aja
-    return console.log('File Stringg.json berhasil dibuat');
 }
 
 // handler function POST ktp
@@ -143,7 +119,6 @@ const addImageKtp = async (request, h) => {
         
         allName = Date.now();
 
-        // Move up
         const queryCheckRow = {
             text: 'SELECT image_url FROM ktps WHERE id_user = $1',
             values: [idUser],
@@ -279,7 +254,4 @@ const replaceImageKtp = async (request, h) => {
         return response;
     }
 };
-
-
-
 module.exports = { addImageKtp, replaceImageKtp };
