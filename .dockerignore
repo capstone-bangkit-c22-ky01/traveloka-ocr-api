@@ -1,4 +1,6 @@
-node_modules
 ktp
 .env
 npm-debug.log
+setup.sh
+.gitignore
+node_modules
