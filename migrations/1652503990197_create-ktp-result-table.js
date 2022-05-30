@@ -1,6 +1,6 @@
 exports.up = (pgm) => {
-  pgm.createTable('ktpresults', {
-    id_ktpresult: {
+  pgm.createTable('ktpresults',  {
+    id: {
 			type: 'VARCHAR(50)',
 			primaryKey: true,
     },
@@ -17,15 +17,15 @@ exports.up = (pgm) => {
       notNull: true,
     },
     nik: {
-			type: 'INTEGER',
+			type: 'BIGINT',
 			unique: true,
 			notNull: true,
     }, 
-    gender: {
+    sex: {
       type: 'VARCHAR(20)',
       notNull: true,
     },
-    marital_status: {
+    married: {
       type: 'VARCHAR(20)',
       notNull: false,
     },

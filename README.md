@@ -45,13 +45,24 @@
 
 - Follow tutorial in this link :) [LINK TUTORIAL](https://www.balbooa.com/gridbox-documentation/how-to-get-google-client-id-and-client-secret)
 
+### Upload Dataset .csv file to Postgres Table
+
+- Open the [spreadshet](https://docs.google.com/spreadsheets/d/1_cEdIsZ2O3pN5ov0bUag25lZft5gdoUiZ_pj0F601w8/)
+- Go to flights and airlines tab and download as .csv format files
+- Open cmd as administrator (Run as Administrator)
+- Login postgres as developer
+- type this code to copy dataset on the table airlines  
+  `\copy table_name from '~address local storage.csv~' with (DELIMITER ',', FORMAT CSV, HEADER)`  
+  example : `\copy airlines from 'D:\Project\Bangkit\dataset\airlines.csv' with (DELIMITER ',', FORMAT CSV, HEADER)`
+- Do the same on the table flights
+
 ---
 
 ## API
 
-### Authentication User (Use JWT)
+### Authentication User
 
----- **_Manual_** ----
+---- **_Manual_ (Use JWT)** ----
 
 - Register
   - method: `POST`
@@ -72,6 +83,7 @@
     }
     ```
 - Login
+
   - method: `POST`,
   - endpoint: `/authentications`
   - body request:
@@ -88,6 +100,7 @@
         "refreshToken": "eyJhb..."
     }
     ```
+
 - Update Access Token
   - method: `PUT`,
   - endpoint: `/authentications`,
@@ -119,31 +132,42 @@
 ---- **_Google_** ----
 
 - Login
-  - method: `POST`,
+  - method: `GET`,
   - endpoint: `/auth/google`
-  - body request:
-    ```json
-    "email": string, email | required
-    "password": string | required
-    ```
+  - _login with pop up google account_
   - body response:
     ```json
     "status": "success",
     "message": "Authentication success",
     "data": {
-      "token": "ya29.a0A...",
-      "expiresIn": 3598,
-        "profile": {
-            "id": "112...",
-            "name": "Maish",
-            "picture": "https://lh3.googleusercontent.com/a/AA...",
-            "email": "email@gmail.com",
-            "email_verified": true
-        }
+        "accessToken": "eyJhbG...",
+        "refreshToken": "eyJhb..."
     }
     ```
+- Update access token & logout **Same as JWT Auth**
 
-### Access Profile (Auth Requirment)
+### If Access Token Has Expired
+
+- body response:
+  ```json
+  "statusCode": 401,
+  "error": "Unauthorized",
+  "message": "Token maximum age exceeded",
+  "attributes": {
+    "error": "Token maximum age exceeded"
+  }
+  ```
+
+### Access feature with Unauthorize user
+
+- body response:
+  ```json
+  "statusCode": 401,
+  "error": "Unauthorized",
+  "message": "Missing authentication"
+  ```
+
+### Access Profile (Auth Requirement)
 
 - Get Profile (Manual Auth)
   - method: `GET`
@@ -164,20 +188,182 @@
       }
     }
     ```
-- Edit Profile (Manual Auth)
-  - method: `PUT`
-  - endpoint: `/users`
+
+### Flight & Booking (Auth Requirement)
+
+- Get Flights
+  - method: `GET`
+  - endpoint: `/flights`
+  - authorization:
+    - type: `Bearer Token`,
+    - token: `accessToken`
+  - body response:
+    ```json
+    "status": "success",
+    "data": {
+      "flights": [
+        {
+          "id": "19629969",
+          "airline": "Sriwijaya",
+          "icon": "https://ik.imagekit.io/tvlk...",
+          "depart_time": "14:20",
+          "arrival_time": "20:50",
+          "departure": "Jakarta",
+          "destination": "Bali",
+          "price": 2374000
+        },
+        {...}
+      ]
+    }
+    ```
+- Get Flights using Filters
+  - method: `GET`
+  - endpoint: `/flights?departure=jakarta&destination=bali`  
+    will be filter from jakarta to bali
+  - authorization:
+    - type: `Bearer Token`,
+    - token: `accessToken`
+  - body response:
+    ```json
+    "status": "success",
+    "data": {
+      "flights": [
+        {
+          "id": "19629969",
+          "airline": "Sriwijaya",
+          "icon": "https://ik.imagekit.io/tvlk...",
+          "depart_time": "14:20",
+          "arrival_time": "20:50",
+          "departure": "Jakarta",
+          "destination": "Bali",
+          "price": 2374000
+        },
+        {...}
+      ]
+    }
+    ```
+- Post Booking
+  - method: `POST`
+  - endpoint: `/flights/booking`
   - authorization:
     - type: `Bearer Token`,
     - token: `accessToken`
   - body request:
     ```json
-    "name": "nama baru" | required,
-    "email": "email baru" | required,
-    "foto_profile": "fotoprofile.png" | nullable | max: 500kB | format : image (png, jpg, jpeg, etc)
+    "id": 6552627,
     ```
+    \*note: id request is id flight
   - body response:
     ```json
     "status": "success",
-    "message": "success updated profile"
+    "message": "Booking success",
+    "data": {
+        "bookingId": "booking-M3dw..."
+    }
+    ```
+- Get Booking History
+  - method: `GET`
+  - endpoint: `/flights/booking`
+  - authorization:
+    - type: `Bearer Token`,
+    - token: `accessToken`
+  - body response:
+    ```json
+    "status": "success",
+    "message": "Booking success",
+    "data": {
+        "bookings": [
+          {
+            "id": "booking-Jij8v2tmajLkfcgj",
+            "departure": "Jakarta",
+            "destination": "Bali",
+            "booking_code": 596253936,
+            "price": 2374000,
+            "status": "success"
+          },
+          {...}
+        ]
+    }
+    ```
+- Update Booking Status (success)
+  - method: `GET`
+  - endpoint: `/flights/booking/{id}`
+  - authorization:
+    - type: `Bearer Token`,
+    - token: `accessToken`
+  - body response:
+    ```json
+    "status": "success",
+    "message": "Booking updated",
+    "data": {
+        "bookingId": "booking-Jij8..."
+    }
+    ```
+
+### Insert ID Card Image (Auth Require)
+
+- Scan ID Card
+
+  - method: `POST`
+  - endpoint: `/ktp`
+  - authorization:
+    - type: `Bearer Token`,
+    - token: `accessToken`
+  - body request:
+    ```
+    * key: file
+    * value: `image/jpg` or `image/jpeg` or `image/png`
+    ```
+  - body response:
+    ```json
+     "status": "Success",
+     "message": "KTP image uccessfully added",
+     "data": {
+        "imageId": "wPnJ9TehHkm1JaZ4"
+     }
+    ```
+
+- Re-scan ID Card (Retake Image)
+  - method: `PUT`
+  - endpoint: `/ktp`
+  - authorization:
+    - type: `Bearer Token`,
+    - token: `accessToken`
+  - body request:
+    ```
+    * key: file
+    * value: `image/jpg` or `image/jpeg` or `image/png`
+    ```
+  - body response:
+    ```json
+     "status": "Success",
+     "message": "Success retake new KTP Image"
+    ```
+
+### Scan and retrieve data from Card-id (Auth Require)
+
+- Get retrieved data from model OCR
+
+  - method: `GET`
+  - endpoint: `/ktpresult`
+  - body response:
+    ```json
+    "status": "success",
+    "data": {
+        "nik": 0000000000000000,
+        "name": "Artia...",
+        "sex": "Female",
+        "married": "Single",
+        "nationality": "Indonesia",
+        "title": "Ms"
+    }
+    ```
+
+- Add retrieved data to database
+  - method: `POST`
+  - endpoint: `/ktpresult`
+  - body response:
+    ```json
+    "status": "success",
+    "message" : "Successfuly added to Database"
     ```

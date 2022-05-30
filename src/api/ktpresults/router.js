@@ -1,24 +1,20 @@
-const {
-	getKtpResultsByIdHandler,
-	editKtpResultByIdHandler,
-	deleteKtpResultByIdHandler,
-} = require('./handler');
+const { postKtpResult, getKtpResult } = require('./handler');
 
 const routes = [
 	{
+		method: 'POST',
+		path: '/ktpresult',
+		options: {
+			auth: {
+				strategy: 'ocrapp_jwt',
+			},
+			handler: postKtpResult,
+		}
+	},
+	{
 		method: 'GET',
-		path: '/ktpresult/{id}',
-		handler: getKtpResultsByIdHandler,
-	},
-	{
-		method: 'PUT',
-		path: '/ktpresult/{id}',
-		handler: editKtpResultByIdHandler,
-	},
-	{
-		method: 'DELETE',
-		path: '/ktpresult/{id}',
-		handler: deleteKtpResultByIdHandler,
+		path: '/ktpresult',
+		handler: getKtpResult,
 	},
 ];
 
