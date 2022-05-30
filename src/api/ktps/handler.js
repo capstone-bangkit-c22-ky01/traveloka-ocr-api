@@ -10,7 +10,7 @@ const ClientError = require('../../exceptions/ClientError');
 const pool = new Pool();
 
 // Import creditions.json from firebase
-const serviceAccount = require('../../../travelokaocr-firebase-adminsdk-wsqmu-dcfd42eea8.json');
+const serviceAccount = require('../../../traveloka-ocr-firebase-adminsdk-5avyv-0bad59c40a.json');
 
 // Initialize App
 const admin = firebaseAdmin.initializeApp({
@@ -18,7 +18,7 @@ const admin = firebaseAdmin.initializeApp({
 });
 
 // Set the bucket
-const storageRef = admin.storage().bucket('gs://travelokaocr.appspot.com');
+const storageRef = admin.storage().bucket('gs://traveloka-ocr.appspot.com');
 
 let allName;
 
@@ -34,7 +34,7 @@ async function uploadFile(path, filename) {
         },
     });
     //THIS WILL RETURN THE IMAGE LOCATION
-    const imageLocation = `gs://travelokaocr.appspot.com/ktpimage/${filename}`;
+    const imageLocation = `gs://traveloka-ocr.appspot.com/ktpimage/${filename}`;
     return imageLocation
 }
 
