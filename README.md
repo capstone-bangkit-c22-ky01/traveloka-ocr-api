@@ -169,7 +169,7 @@
 
 ### Access Profile (Auth Requirement)
 
-- Profile (Manual Login)
+- Profile
   - method: `GET`
   - endpoint: `/users`
   - authorization:
@@ -184,8 +184,29 @@
         "name": "user name",
         "email": "email@gmail.com",
         "password": "$2b$10$tVdv2...",
-        "foto_profil": null or "http:alamat/foto-profil.png"
+        "foto_profil": null or "/users/images/users-asd.../foto-profil.png"
       }
+    }
+    ```
+- Edit Profile
+  - method: `PUT`
+  - endpoint: `/users/images/{*}`
+  - authorization:
+    - type: `Bearer Token`,
+    - token: `accessToken`
+  - header: multipart/form-data
+  - body request :
+    ```json
+    "name": "Budi",
+    "email": "budi@gmail.com"
+    "foto_profile": "download.jpg" | file,
+    ```
+  - body response:
+    ```json
+    "status": "success",
+    "message": "Success updated profile",
+    "data": {
+        "imageUri": "http://localhost:5000/users/images/users-bzY7GwfQnsZk84tM/1654058695056download.jpg"
     }
     ```
 

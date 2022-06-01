@@ -136,7 +136,7 @@ const putUserByAuthHandler = async (request, h) => {
 				status: 'success',
 				message: 'Success updated profile',
 				data: {
-					fileLocation: profileImgUrl,
+					imageUri: profileImgUrl,
 				},
 			});
 			response.code(200);
