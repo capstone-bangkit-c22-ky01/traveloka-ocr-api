@@ -190,7 +190,7 @@
     ```
 - Edit Profile
   - method: `PUT`
-  - endpoint: `/users/images/{*}`
+  - endpoint: `/users`
   - authorization:
     - type: `Bearer Token`,
     - token: `accessToken`
