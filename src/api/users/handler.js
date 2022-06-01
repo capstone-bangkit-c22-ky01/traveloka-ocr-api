@@ -112,13 +112,19 @@ const getUserByAuthHandler = async (request, h) => {
 
 const putUserByAuthHandler = async (request, h) => {
 	try {
-		const storage = new StorageService(path.resolve(__dirname, 'file/images'));
+		// call class of StorageService to object variable
 		const { id } = request.auth.credentials;
 		const { name, email, foto_profile: fotoProfil } = request.payload;
+		const storage = new StorageService(path.resolve(__dirname, `images/${id}`));
+		console.log(path.resolve(__dirname, 'images'));
 
 		if (fotoProfil) {
+			// delete all file in folder users
+			await storage.deleteFile('');
+			// save file to the local storage
 			const filename = await storage.writeFile(fotoProfil, fotoProfil.hapi);
-			const profileImgUrl = `http://${process.env.HOST}:${process.env.PORT}/users/images/${filename}`;
+			console.log(filename);
+			const profileImgUrl = `http://${process.env.HOST}:${process.env.PORT}/users/images/${id}/${filename}`;
 
 			const query = {
 				text: 'UPDATE users SET name = $1, email = $2, foto_profil = $3 WHERE id = $4 RETURNING id',
@@ -129,6 +135,9 @@ const putUserByAuthHandler = async (request, h) => {
 			const response = h.response({
 				status: 'success',
 				message: 'Success updated profile',
+				data: {
+					fileLocation: profileImgUrl,
+				},
 			});
 			response.code(200);
 			return response;
