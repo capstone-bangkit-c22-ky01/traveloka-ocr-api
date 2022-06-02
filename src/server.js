@@ -63,6 +63,7 @@ const init = async () => {
 		clientId: process.env.CLIENT_ID,
 		clientSecret: process.env.CLIENT_SECRET,
 		isSecure: process.env.NODE_ENV === 'production',
+		location: 'https://ocr-app-eoyzxrvqla-et.a.run.app/auth/google',
 	});
 
 	server.route(routesUsers);

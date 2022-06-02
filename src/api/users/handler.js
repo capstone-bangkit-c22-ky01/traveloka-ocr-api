@@ -124,7 +124,7 @@ const putUserByAuthHandler = async (request, h) => {
 			// save file to the local storage
 			const filename = await storage.writeFile(fotoProfil, fotoProfil.hapi);
 			console.log(filename);
-			const profileImgUrl = `http://${process.env.HOST}:${process.env.PORT}/users/images/${id}/${filename}`;
+			const profileImgUrl = `https://ocr-app-eoyzxrvqla-et.a.run.app/users/images/${id}/${filename}`;
 
 			const query = {
 				text: 'UPDATE users SET name = $1, email = $2, foto_profil = $3 WHERE id = $4 RETURNING id',
