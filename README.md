@@ -169,11 +169,9 @@
 
 ### Access Profile (Auth Requirement)
 
-<<<<<<< HEAD
-
-- # Get Profile (Manual Auth)
 - Profile
-  > > > > > > > development
+
+- Profile
   - method: `GET`
   - endpoint: `/users`
   - authorization:
