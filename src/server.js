@@ -63,7 +63,6 @@ const init = async () => {
 		clientId: process.env.CLIENT_ID,
 		clientSecret: process.env.CLIENT_SECRET,
 		isSecure: process.env.NODE_ENV === 'production',
-		location: server.info.uri,
 	});
 
 	server.route(routesUsers);

@@ -9,7 +9,7 @@ const routes = [
 				strategy: 'ocrapp_jwt',
 			},
 			handler: postKtpResult,
-		}
+		},
 	},
 	{
 		method: 'GET',
