@@ -1,4 +1,5 @@
 const { postUserHandler, getUserByAuthHandler, putUserByAuthHandler } = require('./handler');
+const path = require('path');
 
 const routes = [
 	{
@@ -28,6 +29,15 @@ const routes = [
 				maxBytes: 512000,
 			},
 			handler: putUserByAuthHandler,
+		},
+	},
+	{
+		method: 'GET',
+		path: '/users/images/{param*}',
+		handler: {
+			directory: {
+				path: path.resolve(__dirname, 'images'),
+			},
 		},
 	},
 ];
