@@ -3,39 +3,52 @@ const StorageService = require('../../storage/StorageService');
 const InvariantError = require('../../exceptions/InvariantError');
 const NotFoundError = require('../../exceptions/NotFoundError');
 const ClientError = require('../../exceptions/ClientError');
-const { nanoid } = require('nanoid');
-const fs = require('fs/promises');
 
 const pool = new Pool();
 
 const getKtpResult = async (request, h) => {
 	try {
-		const dataKtpResult = await fs.readFile('src/outputKtpResult/dummyResult.json', {
-			encoding: 'utf-8',
-		});
-		const data = JSON.parse(dataKtpResult);
 
-		let title = 'Mr';
-		if (data.sex.toLowerCase() === 'perempuan' && data.married === 'kawin') {
-			title = 'Mrs';
-			data.sex = 'Female';
-			data.married = 'Married';
-		} else if (data.sex.toLowerCase() === 'perempuan' && data.married !== 'kawin') {
-			title = 'Ms';
-			data.sex = 'Female';
-			data.married = 'Single';
-		} else if (data.sex.toLowerCase() === 'laki-laki' && data.married === 'kawin') {
-			data.sex = 'Male';
-			data.married = 'Married';
-		} else {
-			data.sex = 'Male';
-			data.married = 'Single';
+		const { id } = request.auth.credentials
+
+		const queryImageKtp = {
+			text: 'SELECT id FROM ktps WHERE id_user = $1',
+			values: [id],
+		}
+		
+		const getIdKtp = await pool.query(queryImageKtp);
+		const id_ktp = getIdKtp.rows[0].id ;
+		
+		const query = { 
+			text: 'SELECT title, name, nationality, nik, sex, married FROM ktpresults WHERE id_ktp = $1',
+			values: [id_ktp]
+		}
+		
+
+		const result = await pool.query(query);
+		if (!result.rows.length) {
+			throw new InvariantError('Failed to get data from ktpresult');
 		}
 
-		dataKtp = {
-			...data,
-			title,
-		};
+		const dataKtp = result.rows[0];
+		
+		if (dataKtp.sex == 'Perempuan' && dataKtp.married == 'Kawin') {
+			dataKtp.title = 'Mrs';
+			dataKtp.sex = 'Female';
+			dataKtp.married = 'Married';
+		} else if (dataKtp.sex == 'Perempuan' && dataKtp.married !== 'Kawin') {
+			dataKtp.title = 'Ms';
+			dataKtp.sex = 'Female';
+			dataKtp.married = 'Single';
+		} else if (dataKtp.sex == 'laki-laki' && dataKtp.married == 'Kawin') {
+			dataKtp.title = 'Mr';
+			dataKtp.sex = 'Male';
+			dataKtp.married = 'Married';
+		} else {
+			dataKtp.title = 'Mr';
+			dataKtp.sex = 'Male';
+			dataKtp.married = 'Single';
+		}
 
 		const response = h.response({
 			status: 'success',
@@ -43,6 +56,7 @@ const getKtpResult = async (request, h) => {
 		});
 		response.code(201);
 		return response;
+
 	} catch (error) {
 		if (error instanceof ClientError) {
 			const response = h.response({
@@ -64,27 +78,28 @@ const getKtpResult = async (request, h) => {
 	}
 };
 
-const postKtpResult = async (request, h) => {
+const putKtpResult = async (request, h) => {
 	try {
-		const id_ktpresult = nanoid(16);
+		const { title, name, nationality, nik, sex, married } = request.payload;
 
 		const query = {
-			text: 'INSERT INTO ktpresults VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-			values: [id_ktpresult, title, name, nationality, nik, gender, marital_status, id_ktp],
+			text: 'UPDATE ktpresults SET title=$1, name=$2, nationality=$3, nik=$4, sex=$5, married=$6 RETURNING *',
+			values: [title, name, nationality, nik, sex, married],
 		};
 
 		const result = await pool.query(query);
 		if (!result.rows.length) {
-			throw new InvariantError('Failed add ktpresult');
+			throw new InvariantError('Failed to update ktpresult');
 		}
 
 		const dataKtp = result.rows;
 		const response = h.response({
 			status: 'success',
-			data: { dataKtpResult },
+			data: { dataKtp },
 		});
 		response.code(201);
 		return response;
+
 	} catch (error) {
 		if (error instanceof ClientError) {
 			const response = h.response({
@@ -106,4 +121,4 @@ const postKtpResult = async (request, h) => {
 	}
 };
 
-module.exports = { postKtpResult, getKtpResult };
+module.exports = {  getKtpResult, putKtpResult };
