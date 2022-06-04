@@ -363,9 +363,9 @@
      "message": "Success retake new KTP Image"
     ```
 
-### Scan and retrieve data from Card-id (Auth Require)
+### Retrieve data from Card-id (Auth Require)
 
-- Get retrieved data from model OCR
+- Get retrieved data from database
 
   - method: `GET`
   - endpoint: `/ktpresult`
@@ -373,20 +373,29 @@
     ```json
     "status": "success",
     "data": {
-        "nik": 0000000000000000,
+        "title": "Ms",
         "name": "Artia...",
-        "sex": "Female",
-        "married": "Single",
         "nationality": "Indonesia",
-        "title": "Ms"
+        "nik": "111111111111111",
+        "sex": "Female",
+        "married": "Single"
     }
     ```
 
-- Add retrieved data to database
-  - method: `POST`
+- Update retrieved data to database
+  - method: `PUT`
   - endpoint: `/ktpresult`
   - body response:
     ```json
     "status": "success",
-    "message" : "Successfuly added to Database"
+    "data": [
+        {
+          "title": "Ms",
+          "name": "Artia...",
+          "nationality": "Indonesia",
+          "nik": "111111111111111",
+          "sex": "Female",
+          "married": "Single"
+        }
+    ]
     ```
