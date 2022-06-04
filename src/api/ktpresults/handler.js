@@ -1,7 +1,6 @@
 const { Pool } = require('pg');
 const InvariantError = require('../../exceptions/InvariantError');
 const ClientError = require('../../exceptions/ClientError');
-
 const pool = new Pool();
 
 const getKtpResult = async (request, h) => {
@@ -88,20 +87,19 @@ const putKtpResult = async (request, h) => {
 		const id_ktp = getIdKtp.rows[0].id ;
 
 		const query = {
-			text: 'UPDATE ktpresults SET title =$1, name=$2, nationality=$3, nik=$4, sex=$5, married=$6 WHERE id_ktp = $7',
+			text: 'UPDATE ktpresults SET title = $1, name = $2, nationality = $3, nik = $4, sex = $5, married = $6 WHERE id_ktp = $7 RETURNING title, name, nationality, nik, sex, married',
 			values: [title, name, nationality, nik, sex, married, id_ktp],
 		};
 
 		const result = await pool.query(query);
-		console.log(result)
 		if (!result.rows.length) {
-			throw new InvariantError('Failed add ktpresult');
+			throw new InvariantError('Failed update data from KtpResults');
 		}
 		
 		const dataKtp = result.rows;
 		const response = h.response({
 			status: 'success',
-			data: { dataKtp },
+			dataKtp,
 		});
 		response.code(201);
 		return response;
