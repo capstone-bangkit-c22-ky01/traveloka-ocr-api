@@ -3,6 +3,10 @@ const InvariantError = require('../../exceptions/InvariantError');
 const ClientError = require('../../exceptions/ClientError');
 const pool = new Pool();
 
+function uppercase(string) {
+	return string.toString().toUpperCase();
+}
+
 const getKtpResult = async (request, h) => {
 	try {
 		const { id } = request.auth.credentials
@@ -27,15 +31,15 @@ const getKtpResult = async (request, h) => {
 
 		const dataKtp = result.rows[0];
 		
-		if (dataKtp.sex == 'Perempuan' && dataKtp.married == 'Kawin') {
+		if (uppercase(dataKtp.sex) == 'PEREMPUAN' && uppercase(dataKtp.married) == 'KAWIN') {
 			dataKtp.title = 'Mrs';
 			dataKtp.sex = 'Female';
 			dataKtp.married = 'Married';
-		} else if (dataKtp.sex == 'Perempuan' && dataKtp.married !== 'Kawin') {
+		} else if (uppercase(dataKtp.sex) == 'PEREMPUAN' && uppercase(dataKtp.married) !== 'Kawin') {
 			dataKtp.title = 'Ms';
 			dataKtp.sex = 'Female';
 			dataKtp.married = 'Single';
-		} else if (dataKtp.sex == 'laki-laki' && dataKtp.married == 'Kawin') {
+		} else if (uppercase(dataKtp.sex) == 'LAKI-LAKI' && uppercase(dataKtp.married) == 'Kawin') {
 			dataKtp.title = 'Mr';
 			dataKtp.sex = 'Male';
 			dataKtp.married = 'Married';
