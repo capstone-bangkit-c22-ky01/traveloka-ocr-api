@@ -103,7 +103,7 @@ const putKtpResult = async (request, h) => {
 		const dataKtp = result.rows;
 		const response = h.response({
 			status: 'success',
-			dataKtp,
+			data: dataKtp,
 		});
 		response.code(201);
 		return response;
