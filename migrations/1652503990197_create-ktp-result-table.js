@@ -18,7 +18,6 @@ exports.up = (pgm) => {
     },
     nik: {
 			type: 'BIGINT',
-			unique: true,
 			notNull: true,
     }, 
     sex: {
