@@ -1,5 +1,5 @@
 const { addImageKtp } = require('./handler');
-const { replaceImageKtp } = require('./handler');
+// const { replaceImageKtp } = require('./handler');
 
 const routes = [
   {
@@ -32,7 +32,7 @@ const routes = [
 				strategies: ['ocrapp_jwt', 'google'],
 			},
     },
-    handler: replaceImageKtp,
+    handler: addImageKtp,
   },
 ];
 
