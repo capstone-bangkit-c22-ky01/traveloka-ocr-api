@@ -195,7 +195,7 @@ const addImageKtp = async (request, h) => {
 
         // PAKAI AXIOS
         // await axios.post('https://ocr-model-eoyzxrvqla-et.a.run.app/', {filenameCustom})
-        await axios.post('http://localhost:5000/', {filenameCustom})
+        await axios.post('https://ocr-model-eoyzxrvqla-et.a.run.app/', {filenameCustom})
 
             .then((res) =>{
                 console.log(`Status: ${res.status}`);
