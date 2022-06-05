@@ -169,7 +169,9 @@
 
 ### Access Profile (Auth Requirement)
 
-- Profile (Manual Login)
+- Profile
+
+- Profile
   - method: `GET`
   - endpoint: `/users`
   - authorization:
@@ -184,8 +186,29 @@
         "name": "user name",
         "email": "email@gmail.com",
         "password": "$2b$10$tVdv2...",
-        "foto_profil": null or "http:alamat/foto-profil.png"
+        "foto_profil": null or "/users/images/users-asd.../foto-profil.png"
       }
+    }
+    ```
+- Edit Profile
+  - method: `PUT`
+  - endpoint: `/users`
+  - authorization:
+    - type: `Bearer Token`,
+    - token: `accessToken`
+  - header: multipart/form-data
+  - body request :
+    ```json
+    "name": "Budi",
+    "email": "budi@gmail.com"
+    "foto_profile": "download.jpg" | file,
+    ```
+  - body response:
+    ```json
+    "status": "success",
+    "message": "Success updated profile",
+    "data": {
+        "imageUri": "http://localhost:5000/users/images/users-bzY7GwfQnsZk84tM/1654058695056download.jpg"
     }
     ```
 
@@ -340,9 +363,9 @@
      "message": "Success retake new KTP Image"
     ```
 
-### Scan and retrieve data from Card-id (Auth Require)
+### Retrieve data from Card-id (Auth Require)
 
-- Get retrieved data from model OCR
+- Get retrieved data from database
 
   - method: `GET`
   - endpoint: `/ktpresult`
@@ -350,20 +373,29 @@
     ```json
     "status": "success",
     "data": {
-        "nik": 0000000000000000,
+        "title": "Ms",
         "name": "Artia...",
-        "sex": "Female",
-        "married": "Single",
         "nationality": "Indonesia",
-        "title": "Ms"
+        "nik": "111111111111111",
+        "sex": "Female",
+        "married": "Single"
     }
     ```
 
-- Add retrieved data to database
-  - method: `POST`
+- Update retrieved data to database
+  - method: `PUT`
   - endpoint: `/ktpresult`
   - body response:
     ```json
     "status": "success",
-    "message" : "Successfuly added to Database"
+    "data": [
+        {
+          "title": "Ms",
+          "name": "Artia...",
+          "nationality": "Indonesia",
+          "nik": "111111111111111",
+          "sex": "Female",
+          "married": "Single"
+        }
+    ]
     ```

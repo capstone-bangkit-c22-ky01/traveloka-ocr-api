@@ -63,7 +63,7 @@ const init = async () => {
 		clientId: process.env.CLIENT_ID,
 		clientSecret: process.env.CLIENT_SECRET,
 		isSecure: process.env.NODE_ENV === 'production',
-		location: server.info.uri,
+		location: 'https://ocr-app-eoyzxrvqla-et.a.run.app',
 	});
 
 	server.route(routesUsers);

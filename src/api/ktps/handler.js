@@ -18,7 +18,7 @@ const serviceAccount = require('../../../traveloka-ocr-firebase-adminsdk-5avyv-0
 
 // Initialize App
 const admin = firebaseAdmin.initializeApp({
-    credential: firebaseAdmin.credential.cert(serviceAccount),
+	credential: firebaseAdmin.credential.cert(serviceAccount),
 });
 
 // Set the bucket
@@ -28,53 +28,52 @@ let allName;
 
 // Function to upload and store the file in firebase storage
 async function uploadFile(path, filename) {
-    const storage = await storageRef.upload(path, {
-        public: true,
-        destination: `ktpimage/${filename}`,
-        metadata: {
-            metadata:{
-                firebaseStorageDownloadTokens: uuidv4(),
-            }
-        },
-    });
-    //THIS WILL RETURN THE IMAGE LOCATION
-    const imageLocation = `gs://traveloka-ocr.appspot.com/ktpimage/${filename}`;
-    return imageLocation
+	const storage = await storageRef.upload(path, {
+		public: true,
+		destination: `ktpimage/${filename}`,
+		metadata: {
+			metadata: {
+				firebaseStorageDownloadTokens: uuidv4(),
+			},
+		},
+	});
+	//THIS WILL RETURN THE IMAGE LOCATION
+	const imageLocation = `gs://traveloka-ocr.appspot.com/ktpimage/${filename}`;
+	return imageLocation;
 }
 
 // Function for storing the file locally before uploading it to the firebase storage
 async function storeFileUpload(file) {
-    // **nama file asli
-    const { filename } = file.hapi;
+	// **nama file asli
+	const { filename } = file.hapi;
 
-    //** image extension validation
-    const ext = path.extname(filename);
-    const validExt = [ '.jpg', '.png', '.jpeg' ];
-    
-    if (validExt.indexOf(ext) == -1) {
-        throw new InvariantError('Not allowed file type');
-    }
-    
-    // **file custom name
-    const filenameCustom = allName +'ktp'+ ext;
-;
-    const data = file._data;
-    const ktpFolder = './ktp';
+	//** image extension validation
+	const ext = path.extname(filename);
+	const validExt = ['.jpg', '.png', '.jpeg'];
 
-    // create the ktp folder if doesnt exist
-    if (!fs.existsSync(ktpFolder)) {
-        fs.mkdirSync(ktpFolder);
-    }
+	if (validExt.indexOf(ext) == -1) {
+		throw new InvariantError('Not allowed file type');
+	}
 
-    fs.writeFile(`./ktp/${filenameCustom}`, data, (err) => {
-        if(err) {
-            return error;
-        }
-    });
+	// **file custom name
+	const filenameCustom = allName + 'ktp' + ext;
+	const data = file._data;
+	const ktpFolder = './ktp';
 
-    // call uploadFile function
-    const imagePath = `./ktp/${filenameCustom}`;
-    return await uploadFile(imagePath, filenameCustom);
+	// create the ktp folder if doesnt exist
+	if (!fs.existsSync(ktpFolder)) {
+		fs.mkdirSync(ktpFolder);
+	}
+
+	fs.writeFile(`./ktp/${filenameCustom}`, data, (err) => {
+		if (err) {
+			return error;
+		}
+	});
+
+	// call uploadFile function
+	const imagePath = `./ktp/${filenameCustom}`;
+	return await uploadFile(imagePath, filenameCustom);
 }
 
 // Function for deleting the previous files
@@ -100,18 +99,17 @@ async function deletePrevFile(imageName, jsonName) {
 }
 
 // Function for getting and writing coordinates into file.json
-async function writeCoordinates(dataClassString, imageUrl){
+async function writeCoordinates(dataClassString, imageUrl) {
+	const dataClassObject = JSON.parse(dataClassString);
+	dataClassObject.image = imageUrl;
+	const newDataClassString = JSON.stringify(dataClassObject, null, 4);
 
-    const dataClassObject = JSON.parse(dataClassString);
-    dataClassObject.image = imageUrl;
-    const newDataClassString = JSON.stringify(dataClassObject, null, 4);
+	const filenameCustom = allName + 'ktp.json';
 
-    const filenameCustom = allName +'ktp.json';
+	fs.writeFileSync(`./ktp/${filenameCustom}`, newDataClassString);
 
-    fs.writeFileSync(`./ktp/${filenameCustom}`, newDataClassString);
-
-    const jsonPath = `./ktp/${filenameCustom}`;
-    uploadFile(jsonPath, filenameCustom);
+	const jsonPath = `./ktp/${filenameCustom}`;
+	uploadFile(jsonPath, filenameCustom);
 }
 
 // handler function POST ktp
