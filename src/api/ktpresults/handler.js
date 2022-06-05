@@ -1,6 +1,7 @@
 const { Pool } = require('pg');
 const InvariantError = require('../../exceptions/InvariantError');
 const ClientError = require('../../exceptions/ClientError');
+
 const pool = new Pool();
 
 function uppercase(string) {
@@ -23,6 +24,7 @@ const getKtpResult = async (request, h) => {
 			text: 'SELECT title, name, nationality, nik, sex, married FROM ktpresults WHERE id_ktp = $1',
 			values: [id_ktp]
 		}
+		
 
 		const result = await pool.query(query);
 		if (!result.rows.length) {
@@ -31,6 +33,7 @@ const getKtpResult = async (request, h) => {
 
 		const dataKtp = result.rows[0];
 		
+
 		if (uppercase(dataKtp.sex) == 'PEREMPUAN' && uppercase(dataKtp.married) == 'KAWIN') {
 			dataKtp.title = 'Mrs';
 			dataKtp.sex = 'Female';
@@ -55,6 +58,7 @@ const getKtpResult = async (request, h) => {
 		});
 		response.code(201);
 		return response;
+
 	} catch (error) {
 		if (error instanceof ClientError) {
 			const response = h.response({
@@ -107,6 +111,7 @@ const putKtpResult = async (request, h) => {
 		});
 		response.code(201);
 		return response;
+
 	} catch (error) {
 		if (error instanceof ClientError) {
 			const response = h.response({
