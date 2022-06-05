@@ -6,8 +6,12 @@ const { nanoid } = require('nanoid');
 const path = require('path');
 const InvariantError = require('../../exceptions/InvariantError');
 const ClientError = require('../../exceptions/ClientError');
+const requestt = require('request-promise');
+const axios = require('axios');
+// const fetch = require('node-fetch');
 
 const pool = new Pool();
+
 
 // Import creditions.json from firebase
 const serviceAccount = require('../../../traveloka-ocr-firebase-adminsdk-5avyv-0bad59c40a.json');
@@ -90,7 +94,7 @@ async function deletePrevFile(imageName, jsonName) {
         await storageRef.file(`ktpimage/${imageName}`).delete();
         await storageRef.file(`ktpimage/${jsonName}`).delete();
     } catch(error) {
-        console.error(err);
+        // console.error(err);
         throw new InvariantError('Failed to delete the files in the server');
     }
 }
@@ -100,7 +104,7 @@ async function writeCoordinates(dataClassString, imageUrl){
 
     const dataClassObject = JSON.parse(dataClassString);
     dataClassObject.image = imageUrl;
-    const newDataClassString = JSON.stringify(dataClassObject, null, 2);
+    const newDataClassString = JSON.stringify(dataClassObject, null, 4);
 
     const filenameCustom = allName +'ktp.json';
 
@@ -134,8 +138,8 @@ const addImageKtp = async (request, h) => {
             };
     
             const getKtpUrl = await pool.query(queryGet);
-            const imageName = (getKtpUrl.rows[0].image_url).substr(39);
-            const jsonName = (getKtpUrl.rows[0].image_url).slice(39,55) + ".json";
+            const imageName = (getKtpUrl.rows[0].image_url).substr(40);
+            const jsonName = (getKtpUrl.rows[0].image_url).slice(40,56) + ".json";
     
             deletePrevFile(imageName, jsonName);
 
@@ -158,11 +162,70 @@ const addImageKtp = async (request, h) => {
         
         const result = await pool.query(query);
         if(!result.rows.length) {
-            throw new InvariantError('Failed to add KTP image')
+            throw new InvariantError('Failed to add KTP image to Database')
         }
         
-        writeCoordinates(payload.data, imageUrl);
-        
+        // console.log((fileku.hapi).filename);        
+        const forpyFilename = ((payload.file).hapi).filename;
+        const ext = path.extname(forpyFilename);
+
+        const filenameCustom = allName +'ktp'+ ext;
+
+        const pyFilename = `testing/${filenameCustom}`;
+
+        writeCoordinates(payload.data, pyFilename);
+        // writeCoordinates(payload.data, imageUrl);
+
+        // //PAKE REQUEST------------------------------
+        // var options = {
+        //     method: 'POST',
+        //     uri:'http://localhost:5000/',
+        //     body: filenameCustom, // 1654161993498ktp.png
+        //     json: true,
+        // };
+
+        // console.log("Atas---------------");
+        // var sendrequest = await requestt(options)
+        // .then(function (parsedBody) {
+        //     console.log("INI PARSE---------------");
+        //     console.log(parsedBody);
+        // })
+        // .catch(function (err) {
+        //     console.log(err);
+        // });
+        // console.log("Bawah---------------");
+        // // ----------------------------------------------------------------
+
+        // PAKAI AXIOSSSSSSSSSSSSSSSSSSSSSSS----------------
+        console.log("DIluarnya axios ataas");
+        // axios.post('http://localhost:5000/', {filenameCustom}, { timeout : 2 })
+        await axios.post('https://ocr-model-eoyzxrvqla-et.a.run.app/', {filenameCustom})
+            .then((res) =>{
+                console.log("Baris pertama")
+                console.log(`Status: ${res.status}`);
+                console.log("-----------------------STATUS DIATAS. BODY DIBAWAH---------------------")
+                console.log('Body: ', res.data);
+                // console.log('nik: ', res.data.nik);
+                // const kr_nik = res.data.nik;
+                // const kr_name = res.data.name;
+                // const kr_married = res.data.married;
+                // const 
+                const id_ktpresult = nanoid(16);
+                const title = "mr";
+
+                const queryKtpR = {
+                	text: 'INSERT INTO ktpresults VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+                	values: [id_ktpresult, title, res.data.name, res.data.nationality, res.data.nik, res.data.sex, res.data.married, id],
+                };
+                pool.query(queryKtpR);
+
+            }).catch((error) =>{
+                console.log(error.response); 
+                console.log("ini eror")
+            });
+        console.log("DIluarnya axios bawah");
+        // -----------------------------------------------------------------------
+
         const imageId = result.rows[0].id;
         const response = h.response({
             status: 'Success',
@@ -209,8 +272,8 @@ const replaceImageKtp = async (request, h) => {
         };
 
         const getKtpUrl = await pool.query(queryGet);
-        const imageName = (getKtpUrl.rows[0].image_url).substr(39);
-        const jsonName = (getKtpUrl.rows[0].image_url).slice(39,55) + ".json";
+        const imageName = (getKtpUrl.rows[0].image_url).substr(40);
+        const jsonName = (getKtpUrl.rows[0].image_url).slice(40,56) + ".json";
 
         deletePrevFile(imageName, jsonName);
 
