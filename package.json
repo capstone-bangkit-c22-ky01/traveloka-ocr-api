@@ -15,13 +15,17 @@
 		"@hapi/hapi": "^20.2.2",
 		"@hapi/inert": "^6.0.5",
 		"@hapi/jwt": "^2.1.1",
+		"axios": "^0.27.2",
 		"bcrypt": "^5.0.1",
 		"dotenv": "^16.0.1",
 		"firebase-admin": "^10.2.0",
 		"fs": "^0.0.1-security",
 		"nanoid": "^3.3.4",
+		"node-fetch": "^3.2.5",
 		"node-pg-migrate": "^6.2.1",
 		"pg": "^8.7.3",
+		"request": "^2.88.2",
+		"request-promise": "^4.2.6",
 		"uuid": "^8.3.2"
 	},
 	"devDependencies": {

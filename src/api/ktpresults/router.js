@@ -1,20 +1,25 @@
-const { postKtpResult, getKtpResult } = require('./handler');
+const { getKtpResult, putKtpResult } = require('./handler');
 
 const routes = [
 	{
-		method: 'POST',
+		method: 'GET',
 		path: '/ktpresult',
 		options: {
 			auth: {
 				strategy: 'ocrapp_jwt',
 			},
-			handler: postKtpResult,
+			handler: getKtpResult,
 		},
 	},
 	{
-		method: 'GET',
+		method: 'PUT',
 		path: '/ktpresult',
-		handler: getKtpResult,
+		options: {
+			auth: {
+				strategy: 'ocrapp_jwt',
+			},
+			handler: putKtpResult,
+		},
 	},
 ];
 

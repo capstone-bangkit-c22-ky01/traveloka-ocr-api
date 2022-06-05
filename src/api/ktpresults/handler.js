@@ -1,14 +1,15 @@
 const { Pool } = require('pg');
-const StorageService = require('../../storage/StorageService');
 const InvariantError = require('../../exceptions/InvariantError');
-const NotFoundError = require('../../exceptions/NotFoundError');
 const ClientError = require('../../exceptions/ClientError');
 
 const pool = new Pool();
 
+function uppercase(string) {
+	return string.toString().toUpperCase();
+}
+
 const getKtpResult = async (request, h) => {
 	try {
-
 		const { id } = request.auth.credentials
 
 		const queryImageKtp = {
@@ -32,15 +33,16 @@ const getKtpResult = async (request, h) => {
 
 		const dataKtp = result.rows[0];
 		
-		if (dataKtp.sex == 'Perempuan' && dataKtp.married == 'Kawin') {
+
+		if (uppercase(dataKtp.sex) == 'PEREMPUAN' && uppercase(dataKtp.married) == 'KAWIN') {
 			dataKtp.title = 'Mrs';
 			dataKtp.sex = 'Female';
 			dataKtp.married = 'Married';
-		} else if (dataKtp.sex == 'Perempuan' && dataKtp.married !== 'Kawin') {
+		} else if (uppercase(dataKtp.sex) == 'PEREMPUAN' && uppercase(dataKtp.married) !== 'KAWIN') {
 			dataKtp.title = 'Ms';
 			dataKtp.sex = 'Female';
 			dataKtp.married = 'Single';
-		} else if (dataKtp.sex == 'laki-laki' && dataKtp.married == 'Kawin') {
+		} else if (uppercase(dataKtp.sex) == 'LAKI-LAKI' && uppercase(dataKtp.married) == 'KAWIN') {
 			dataKtp.title = 'Mr';
 			dataKtp.sex = 'Male';
 			dataKtp.married = 'Married';
@@ -80,22 +82,32 @@ const getKtpResult = async (request, h) => {
 
 const putKtpResult = async (request, h) => {
 	try {
+
 		const { title, name, nationality, nik, sex, married } = request.payload;
+		const { id } = request.auth.credentials
+
+		const queryImageKtp = {
+			text: 'SELECT id FROM ktps WHERE id_user = $1',
+			values: [id],
+		}
+		
+		const getIdKtp = await pool.query(queryImageKtp);
+		const id_ktp = getIdKtp.rows[0].id ;
 
 		const query = {
-			text: 'UPDATE ktpresults SET title=$1, name=$2, nationality=$3, nik=$4, sex=$5, married=$6 RETURNING *',
-			values: [title, name, nationality, nik, sex, married],
+			text: 'UPDATE ktpresults SET title = $1, name = $2, nationality = $3, nik = $4, sex = $5, married = $6 WHERE id_ktp = $7 RETURNING title, name, nationality, nik, sex, married',
+			values: [title, name, nationality, nik, sex, married, id_ktp],
 		};
 
 		const result = await pool.query(query);
 		if (!result.rows.length) {
-			throw new InvariantError('Failed to update ktpresult');
+			throw new InvariantError('Failed update data from KtpResults');
 		}
-
+		
 		const dataKtp = result.rows;
 		const response = h.response({
 			status: 'success',
-			data: { dataKtp },
+			data: dataKtp,
 		});
 		response.code(201);
 		return response;
@@ -121,4 +133,4 @@ const putKtpResult = async (request, h) => {
 	}
 };
 
-module.exports = {  getKtpResult, putKtpResult };
+module.exports = { getKtpResult, putKtpResult };
