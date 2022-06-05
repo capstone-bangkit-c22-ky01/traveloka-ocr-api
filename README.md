@@ -332,10 +332,23 @@
   - authorization:
     - type: `Bearer Token`,
     - token: `accessToken`
+  - header: multipart/form-data
   - body request:
     ```
-    * key: file
-    * value: `image/jpg` or `image/jpeg` or `image/png`
+    * file: `image/jpg` or `image/jpeg` or `image/png`   |file
+    * data: { "class": {
+                "NIK": {
+                  "Xmin": 117,
+                  "Ymin": 89,
+                  "Xmax": 392,
+                  "Ymax": 135
+                },
+                "name": {...},
+                "sex": {...},
+                "married": {...},
+                "nationality": {...}
+              }
+            }
     ```
   - body response:
     ```json
