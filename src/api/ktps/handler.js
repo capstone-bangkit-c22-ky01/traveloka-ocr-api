@@ -194,22 +194,25 @@ const addImageKtp = async (request, h) => {
         // // ----------------------------------------------------------------
 
         // PAKAI AXIOS
-        await axios.post('https://ocr-model-eoyzxrvqla-et.a.run.app/', {filenameCustom})
+        // await axios.post('https://ocr-model-eoyzxrvqla-et.a.run.app/', {filenameCustom})
+        await axios.post('http://localhost:5000/', {filenameCustom})
+
             .then((res) =>{
                 console.log(`Status: ${res.status}`);
                 console.log('Body: ', res.data);
 
                 const id_ktpresult = nanoid(16);
+                const title = "mr";
 
                 const queryKtpR = {
-                	text: 'INSERT INTO ktpresults VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING *',
-                	values: [id_ktpresult, res.data.name, res.data.nationality, res.data.nik, res.data.sex, res.data.married, id],
+                	text: 'INSERT INTO ktpresults VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+                	values: [id_ktpresult, title, res.data.name, res.data.nationality, res.data.nik, res.data.sex, res.data.married, id],
                 };
                 pool.query(queryKtpR);
 
             }).catch((error) =>{
                 console.log(error.response); 
-                console.log("Terjadi Error!")
+                // console.log("Terjadi Error!")
                 throw new InvariantError('Failed to get data from model');
 
             });
