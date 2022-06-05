@@ -323,10 +323,7 @@
     }
     ```
 
-### Insert ID Card Image (Auth Require)
-
-- Scan ID Card
-
+### Insert ID Card Image (also Retake) (Auth Require)
   - method: `POST`
   - endpoint: `/ktp`
   - authorization:
@@ -353,27 +350,10 @@
   - body response:
     ```json
      "status": "Success",
-     "message": "KTP image uccessfully added",
+     "message": "KTP image successfully added",
      "data": {
         "imageId": "wPnJ9TehHkm1JaZ4"
      }
-    ```
-
-- Re-scan ID Card (Retake Image)
-  - method: `PUT`
-  - endpoint: `/ktp`
-  - authorization:
-    - type: `Bearer Token`,
-    - token: `accessToken`
-  - body request:
-    ```
-    * key: file
-    * value: `image/jpg` or `image/jpeg` or `image/png`
-    ```
-  - body response:
-    ```json
-     "status": "Success",
-     "message": "Success retake new KTP Image"
     ```
 
 ### Retrieve data from Card-id (Auth Require)
