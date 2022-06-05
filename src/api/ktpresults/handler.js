@@ -35,11 +35,11 @@ const getKtpResult = async (request, h) => {
 			dataKtp.title = 'Mrs';
 			dataKtp.sex = 'Female';
 			dataKtp.married = 'Married';
-		} else if (uppercase(dataKtp.sex) == 'PEREMPUAN' && uppercase(dataKtp.married) !== 'Kawin') {
+		} else if (uppercase(dataKtp.sex) == 'PEREMPUAN' && uppercase(dataKtp.married) !== 'KAWIN') {
 			dataKtp.title = 'Ms';
 			dataKtp.sex = 'Female';
 			dataKtp.married = 'Single';
-		} else if (uppercase(dataKtp.sex) == 'LAKI-LAKI' && uppercase(dataKtp.married) == 'Kawin') {
+		} else if (uppercase(dataKtp.sex) == 'LAKI-LAKI' && uppercase(dataKtp.married) == 'KAWIN') {
 			dataKtp.title = 'Mr';
 			dataKtp.sex = 'Male';
 			dataKtp.married = 'Married';
