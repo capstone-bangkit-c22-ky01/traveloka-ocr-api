@@ -28,7 +28,7 @@ exports.up = (pgm) => {
       type: 'VARCHAR(20)',
       notNull: false,
     },
-    id_ktp: {
+    id_user: {
       type: 'VARCHAR(50)',
       notNull: true,
     }
@@ -36,8 +36,8 @@ exports.up = (pgm) => {
 
   pgm.addConstraint(
     'ktpresults',
-    'fk_ktpresults.id_ktp_ktps.id',
-    'FOREIGN KEY(id_ktp) REFERENCES ktps(id) ON DELETE CASCADE'
+    'fk_ktpresults.id_user_users.id',
+    'FOREIGN KEY(id_user) REFERENCES users(id) ON DELETE CASCADE'
   )
 };
 

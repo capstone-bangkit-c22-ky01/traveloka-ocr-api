@@ -10,19 +10,19 @@ function uppercase(string) {
 
 const getKtpResult = async (request, h) => {
 	try {
-		const { id } = request.auth.credentials
+		const { id:idUser } = request.auth.credentials
 
-		const queryImageKtp = {
-			text: 'SELECT id FROM ktps WHERE id_user = $1',
-			values: [id],
-		}
+		// const queryImageKtp = {
+		// 	text: 'SELECT id FROM ktps WHERE id_user = $1',
+		// 	values: [id],
+		// }
 		
-		const getIdKtp = await pool.query(queryImageKtp);
-		const id_ktp = getIdKtp.rows[0].id ;
+		// const getIdKtp = await pool.query(queryImageKtp);
+		// const id_ktp = getIdKtp.rows[0].id ;
 		
 		const query = { 
-			text: 'SELECT title, name, nationality, nik, sex, married FROM ktpresults WHERE id_ktp = $1',
-			values: [id_ktp]
+			text: 'SELECT title, name, nationality, nik, sex, married FROM ktpresults WHERE id_user = $1',
+			values: [idUser]
 		}
 		
 
@@ -33,23 +33,25 @@ const getKtpResult = async (request, h) => {
 
 		const dataKtp = result.rows[0];
 		
+		if (uppercase(dataKtp.sex) !== 'MALE' && uppercase(dataKtp.sex) !=='FEMALE'){
 
-		if (uppercase(dataKtp.sex) == 'PEREMPUAN' && uppercase(dataKtp.married) == 'KAWIN') {
-			dataKtp.title = 'Mrs';
-			dataKtp.sex = 'Female';
-			dataKtp.married = 'Married';
-		} else if (uppercase(dataKtp.sex) == 'PEREMPUAN' && uppercase(dataKtp.married) !== 'KAWIN') {
-			dataKtp.title = 'Ms';
-			dataKtp.sex = 'Female';
-			dataKtp.married = 'Single';
-		} else if (uppercase(dataKtp.sex) == 'LAKI-LAKI' && uppercase(dataKtp.married) == 'KAWIN') {
-			dataKtp.title = 'Mr';
-			dataKtp.sex = 'Male';
-			dataKtp.married = 'Married';
-		} else {
-			dataKtp.title = 'Mr';
-			dataKtp.sex = 'Male';
-			dataKtp.married = 'Single';
+			if (uppercase(dataKtp.sex) == 'PEREMPUAN' && uppercase(dataKtp.married) == 'KAWIN') {
+				dataKtp.title = 'Mrs';
+				dataKtp.sex = 'Female';
+				dataKtp.married = 'Married';
+			} else if (uppercase(dataKtp.sex) == 'PEREMPUAN' && uppercase(dataKtp.married) !== 'KAWIN') {
+				dataKtp.title = 'Ms';
+				dataKtp.sex = 'Female';
+				dataKtp.married = 'Single';
+			} else if (uppercase(dataKtp.sex) == 'LAKI-LAKI' && uppercase(dataKtp.married) == 'KAWIN') {
+				dataKtp.title = 'Mr';
+				dataKtp.sex = 'Male';
+				dataKtp.married = 'Married';
+			} else {
+				dataKtp.title = 'Mr';
+				dataKtp.sex = 'Male';
+				dataKtp.married = 'Single';
+			}
 		}
 
 		const response = h.response({
@@ -84,19 +86,19 @@ const putKtpResult = async (request, h) => {
 	try {
 
 		const { title, name, nationality, nik, sex, married } = request.payload;
-		const { id } = request.auth.credentials
+		const { id:idUser } = request.auth.credentials
 
-		const queryImageKtp = {
-			text: 'SELECT id FROM ktps WHERE id_user = $1',
-			values: [id],
-		}
+		// const queryImageKtp = {
+		// 	text: 'SELECT id FROM ktps WHERE id_user = $1',
+		// 	values: [id],
+		// }
 		
-		const getIdKtp = await pool.query(queryImageKtp);
-		const id_ktp = getIdKtp.rows[0].id ;
+		// const getIdKtp = await pool.query(queryImageKtp);
+		// const id_ktp = getIdKtp.rows[0].id ;
 
 		const query = {
-			text: 'UPDATE ktpresults SET title = $1, name = $2, nationality = $3, nik = $4, sex = $5, married = $6 WHERE id_ktp = $7 RETURNING title, name, nationality, nik, sex, married',
-			values: [title, name, nationality, nik, sex, married, id_ktp],
+			text: 'UPDATE ktpresults SET title = $1, name = $2, nationality = $3, nik = $4, sex = $5, married = $6 WHERE id_user = $7 RETURNING title, name, nationality, nik, sex, married',
+			values: [title, name, nationality, nik, sex, married, idUser],
 		};
 
 		const result = await pool.query(query);
