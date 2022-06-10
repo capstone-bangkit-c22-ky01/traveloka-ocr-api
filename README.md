@@ -284,7 +284,7 @@
         "bookingId": "booking-M3dw..."
     }
     ```
-- Get Booking History
+- Get All Booking History
   - method: `GET`
   - endpoint: `/flights/booking`
   - authorization:
@@ -303,13 +303,42 @@
             "booking_code": 596253936,
             "price": 2374000,
             "status": "success",
-            "passenger_name": "SURIAMAN",
-            "passenger_title": "Mr"
           },
           {...}
         ]
     }
     ```
+- Get Detail Booking History
+  - method: `GET`
+  - endpoint: `/flights/booking/{id}`
+  - authorization:
+    - type: `Bearer Token`,
+    - token: `accessToken`
+  - body response:
+    ```json
+    "status": "success",
+    "message": "Booking success",
+    "data": {
+        "bookings": [
+          {
+            "id": "booking--O25hiweBPPwF188",
+             "departure": "Makassar",
+             "destination": "Balikpapan",
+             "status": "success",
+             "price": 819200,
+             "booking_code": 632467104,
+             "passenger_name": "SURIAMAN",
+             "passenger_title": "Mr",
+             "depart_time": "7:45",
+             "arrival_time": "9:00",
+             "airline": "Batik",
+             "icon": "https://ik.imagekit.io/tvlk/image/imageResource/2019/12/13 ..."
+          },
+          {...}
+        ]
+    }
+    ```
+
 - Update Booking Status (success)
   - method: `PUT`
   - endpoint: `/flights/booking/{id}`
