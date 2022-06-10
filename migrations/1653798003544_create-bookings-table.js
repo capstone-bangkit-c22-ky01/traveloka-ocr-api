@@ -28,6 +28,12 @@ exports.up = (pgm) => {
 			type: 'TEXT',
 			notNull: true,
 		},
+		passenger_name: {
+			type: 'TEXT',
+		},
+		passenger_title: {
+			type: 'VARCHAR(5)',
+		},
 	});
 
 	/*
