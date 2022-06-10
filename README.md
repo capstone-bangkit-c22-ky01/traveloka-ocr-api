@@ -302,18 +302,27 @@
             "destination": "Bali",
             "booking_code": 596253936,
             "price": 2374000,
-            "status": "success"
+            "status": "success",
+            "passenger_name": "SURIAMAN",
+            "passenger_title": "Mr"
           },
           {...}
         ]
     }
     ```
 - Update Booking Status (success)
-  - method: `GET`
+  - method: `PUT`
   - endpoint: `/flights/booking/{id}`
   - authorization:
     - type: `Bearer Token`,
     - token: `accessToken`
+  - body request:
+    ```json
+    {
+    "title": "Mr",
+    "name": "SURIAMAN"
+    }
+    ```
   - body response:
     ```json
     "status": "success",
@@ -378,6 +387,18 @@
 - Update retrieved data to database
   - method: `PUT`
   - endpoint: `/ktpresult`
+  - body request:
+    ```json
+      {
+        "title": "Ms",
+        "name": "Artia...",
+        "nationality": "Indonesia",
+        "nik": "111111111111111",
+        "sex": "Female",
+        "married": "Single"
+      }
+      ```
+      \*note: body request is from GET /ktpresult output + data that edited by user manually
   - body response:
     ```json
     "status": "success",
