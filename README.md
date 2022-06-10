@@ -302,18 +302,27 @@
             "destination": "Bali",
             "booking_code": 596253936,
             "price": 2374000,
-            "status": "success"
+            "status": "success",
+            "passenger_name": "SURIAMAN",
+            "passenger_title": "Mr"
           },
           {...}
         ]
     }
     ```
 - Update Booking Status (success)
-  - method: `GET`
+  - method: `PUT`
   - endpoint: `/flights/booking/{id}`
   - authorization:
     - type: `Bearer Token`,
     - token: `accessToken`
+  - body request:
+    ```json
+    {
+    "title": "Mr",
+    "name": "SURIAMAN"
+    }
+    ```
   - body response:
     ```json
     "status": "success",
@@ -323,10 +332,7 @@
     }
     ```
 
-### Insert ID Card Image (Auth Require)
-
-- Scan ID Card
-
+### Insert ID Card Image (also Retake) (Auth Require)
   - method: `POST`
   - endpoint: `/ktp`
   - authorization:
@@ -353,27 +359,10 @@
   - body response:
     ```json
      "status": "Success",
-     "message": "KTP image uccessfully added",
+     "message": "KTP image successfully added",
      "data": {
         "imageId": "wPnJ9TehHkm1JaZ4"
      }
-    ```
-
-- Re-scan ID Card (Retake Image)
-  - method: `PUT`
-  - endpoint: `/ktp`
-  - authorization:
-    - type: `Bearer Token`,
-    - token: `accessToken`
-  - body request:
-    ```
-    * key: file
-    * value: `image/jpg` or `image/jpeg` or `image/png`
-    ```
-  - body response:
-    ```json
-     "status": "Success",
-     "message": "Success retake new KTP Image"
     ```
 
 ### Retrieve data from Card-id (Auth Require)
@@ -398,6 +387,18 @@
 - Update retrieved data to database
   - method: `PUT`
   - endpoint: `/ktpresult`
+  - body request:
+    ```json
+      {
+        "title": "Ms",
+        "name": "Artia...",
+        "nationality": "Indonesia",
+        "nik": "111111111111111",
+        "sex": "Female",
+        "married": "Single"
+      }
+      ```
+      \*note: body request is from GET /ktpresult output + data that edited by user manually
   - body response:
     ```json
     "status": "success",

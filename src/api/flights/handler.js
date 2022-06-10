@@ -114,6 +114,8 @@ const getBookingByUserIdHandler = async (request, h) => {
 					booking_code: booking.booking_code,
 					price: booking.price,
 					status: booking.status,
+					passenger_name: booking.passenger_name,
+					passenger_title: booking.passenger_title
 				})),
 			},
 		};
@@ -141,13 +143,14 @@ const getBookingByUserIdHandler = async (request, h) => {
 const putBookingByIdHandler = async (request, h) => {
 	try {
 		const { id: idBooking } = request.params;
+		const { title, name } = request.payload;
 
 		const status = 'success';
 		const updatedAt = new Date().toISOString();
 
 		const query = {
-			text: 'UPDATE bookings SET status = $1, updated_at = $2 WHERE id = $3 RETURNING id',
-			values: [status, updatedAt, idBooking],
+			text: 'UPDATE bookings SET status = $1, updated_at = $2, passenger_name = $3, passenger_title = $4 WHERE id = $5 RETURNING id',
+			values: [status, updatedAt, name, title, idBooking],
 		};
 
 		const result = await pool.query(query);

@@ -120,34 +120,25 @@ const addImageKtp = async (request, h) => {
         
         allName = Date.now();
 
-        const queryCheckRow = {
-            text: 'SELECT image_url FROM ktps WHERE id_user = $1',
+        // BUAT NGEHAPPUS DATA KTP DI DATABASE --------------------------------
+        const queryCheckRowResults = {
+            text: 'SELECT id FROM ktpresults WHERE id_user = $1',
             values: [idUser],
         };
-        const checkRow = await pool.query(queryCheckRow);
+        const checkRow = await pool.query(queryCheckRowResults);
 
         // Checking the ktps tabel rows
         if(Object.keys(checkRow.rows).length !== 0){
 
-            const queryGet = {
-                text: 'SELECT image_url FROM ktps WHERE id_user = $1',
+            // Delete
+            const queryDeleteResult = {
+                text: 'DELETE from ktpresults WHERE id_user = $1',
                 values: [idUser],
             };
-    
-            const getKtpUrl = await pool.query(queryGet);
-            const imageName = (getKtpUrl.rows[0].image_url).substr(40);
-            const jsonName = (getKtpUrl.rows[0].image_url).slice(40,56) + ".json";
-    
-            deletePrevFile(imageName, jsonName);
-
-            // If Delete
-            const queryDelete = {
-                text: 'DELETE from ktps WHERE id_user = $1',
-                values: [idUser],
-            };
-            await pool.query(queryDelete);
-            console.log("Udah dihapus row-nya");
+            await pool.query(queryDeleteResult);
+            // console.log("Udah dihapus data ktp result-nya");
         };
+        // --------------------------------------------------
 
         const imageUrl = await storeFileUpload(payload.file);
         
@@ -194,7 +185,7 @@ const addImageKtp = async (request, h) => {
         // // ----------------------------------------------------------------
 
         // PAKAI AXIOS
-        // await axios.post('https://ocr-model-eoyzxrvqla-et.a.run.app/', {filenameCustom})
+        // await axios.post('http://localhost:5000/', {filenameCustom})
         await axios.post('https://ocr-model-eoyzxrvqla-et.a.run.app/', {filenameCustom})
 
             .then((res) =>{
@@ -206,17 +197,38 @@ const addImageKtp = async (request, h) => {
 
                 const queryKtpR = {
                 	text: 'INSERT INTO ktpresults VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-                	values: [id_ktpresult, title, res.data.name, res.data.nationality, res.data.nik, res.data.sex, res.data.married, id],
+                	values: [id_ktpresult, title, res.data.name, res.data.nationality, res.data.nik, res.data.sex, res.data.married, idUser],
                 };
                 pool.query(queryKtpR);
 
             }).catch((error) =>{
-                console.log(error.response); 
+                // console.log(error.response); 
                 // console.log("Terjadi Error!")
                 throw new InvariantError('Failed to get data from model');
 
             });
         // -----------------------------------------------------------------------
+
+        // Deleting image
+   
+            const queryGet = {
+                text: 'SELECT image_url FROM ktps WHERE id_user = $1',
+                values: [idUser],
+            };
+    
+            const getKtpUrl = await pool.query(queryGet);
+            const imageName = await (getKtpUrl.rows[0].image_url).substr(40);
+            const jsonName = await (getKtpUrl.rows[0].image_url).slice(40,56) + ".json";
+    
+            await deletePrevFile(imageName, jsonName);
+
+            // If Delete
+            const queryDelete = {
+                text: 'DELETE from ktps WHERE id_user = $1',
+                values: [idUser],
+            };
+            await pool.query(queryDelete);
+            // console.log("Udah dihapus row-nya");
 
         const imageId = result.rows[0].id;
         const response = h.response({
