@@ -189,8 +189,8 @@ const addImageKtp = async (request, h) => {
         await axios.post('https://ocr-model-eoyzxrvqla-et.a.run.app/', {filenameCustom})
 
             .then((res) =>{
-                console.log(`Status: ${res.status}`);
-                console.log('Body: ', res.data);
+                // console.log(`Status: ${res.status}`);
+                // console.log('Body: ', res.data);
 
                 const id_ktpresult = nanoid(16);
                 const title = "mr";

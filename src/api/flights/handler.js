@@ -114,8 +114,6 @@ const getBookingByUserIdHandler = async (request, h) => {
 					booking_code: booking.booking_code,
 					price: booking.price,
 					status: booking.status,
-					passenger_name: booking.passenger_name,
-					passenger_title: booking.passenger_title
 				})),
 			},
 		};
@@ -139,6 +137,59 @@ const getBookingByUserIdHandler = async (request, h) => {
 		return response;
 	}
 };
+
+const getBookingDetailsByBookingIdHandler = async (request, h) => {
+	try {
+		const { bookingId: idBooking } = request.params;
+
+		const query = {
+			text: 'SELECT bookings.id, depart_time, arrival_time, departure, destination, status, price, booking_code, passenger_name, passenger_title, airline, icon FROM flights INNER JOIN bookings ON flights.id=bookings.id_flight INNER JOIN airlines ON flights.id_airline=airlines.id WHERE bookings.id = $1',
+			values: [idBooking],
+		};
+		const result = await pool.query(query);
+		const bookings = result.rows;
+		return {
+			status: 'success',
+			data: {
+				bookings: bookings.map((booking) => ({
+					id: booking.id,
+					departure: booking.departure,
+					destination: booking.destination,
+					status: booking.status,
+					price: booking.price,
+					booking_code: booking.booking_code,
+					passenger_name: booking.passenger_name,
+					passenger_title: booking.passenger_title,
+					depart_time: booking.depart_time,
+					arrival_time: booking.arrival_time,
+					airline: booking.airline,
+					icon: booking.icon
+
+				})),
+			},
+		};
+	} catch (error) {
+		if (error instanceof ClientError) {
+			const response = h.response({
+				status: 'fail',
+				message: error.message,
+			});
+			response.code(error.statusCode);
+			return response;
+		}
+
+		// Server ERROR!
+		const response = h.response({
+			status: 'error',
+			message: 'Sorry, there was a failure on our server.',
+		});
+		response.code(500);
+		console.error(error);
+		return response;
+	}
+};
+
+
 
 const putBookingByIdHandler = async (request, h) => {
 	try {
@@ -193,4 +244,5 @@ module.exports = {
 	postFlightBookingHandler,
 	getBookingByUserIdHandler,
 	putBookingByIdHandler,
+	getBookingDetailsByBookingIdHandler
 };
