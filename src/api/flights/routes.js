@@ -3,6 +3,7 @@ const {
 	postFlightBookingHandler,
 	getBookingByUserIdHandler,
 	putBookingByIdHandler,
+	getBookingDetailsByBookingIdHandler
 } = require('./handler');
 
 const routes = [
@@ -34,6 +35,16 @@ const routes = [
 				strategy: 'ocrapp_jwt',
 			},
 			handler: getBookingByUserIdHandler,
+		},
+	},
+	{
+		method: 'GET',
+		path: '/flights/booking/{bookingId}',
+		options: {
+			auth: {
+				strategy: 'ocrapp_jwt',
+			},
+			handler: getBookingDetailsByBookingIdHandler,
 		},
 	},
 	{
