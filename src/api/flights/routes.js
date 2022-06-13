@@ -3,7 +3,8 @@ const {
 	postFlightBookingHandler,
 	getBookingByUserIdHandler,
 	putBookingByIdHandler,
-	getBookingDetailsByBookingIdHandler
+	getBookingDetailsByBookingIdHandler,
+	deleteBookingsHandler,
 } = require('./handler');
 
 const routes = [
@@ -55,6 +56,16 @@ const routes = [
 				strategy: 'ocrapp_jwt',
 			},
 			handler: putBookingByIdHandler,
+		},
+	},
+	{
+		method: 'PUT',
+		path: '/flights/booking',
+		options: {
+			auth: {
+				strategy: 'ocrapp_jwt',
+			},
+			handler: deleteBookingsHandler,
 		},
 	},
 ];

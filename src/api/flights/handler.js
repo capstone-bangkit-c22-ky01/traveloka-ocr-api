@@ -150,21 +150,20 @@ const getBookingDetailsByBookingIdHandler = async (request, h) => {
 		const bookingDetail = result.rows[0];
 		return {
 			status: 'success',
-			data:
-				bookingDetail,
+			data: bookingDetail,
 
-					// id: bookingDetail.id,
-					// departure: bookingDetail.departure,
-					// destination: bookingDetail.destination,
-					// status: bookingDetail.status,
-					// price: bookingDetail.price,
-					// booking_code: bookingDetail.booking_code,
-					// passenger_name: bookingDetail.passenger_name,
-					// passenger_title: bookingDetail.passenger_title,
-					// depart_time: bookingDetail.depart_time,
-					// arrival_time: bookingDetail.arrival_time,
-					// airline: bookingDetail.airline,
-					// icon: bookingDetail.icon
+			// id: bookingDetail.id,
+			// departure: bookingDetail.departure,
+			// destination: bookingDetail.destination,
+			// status: bookingDetail.status,
+			// price: bookingDetail.price,
+			// booking_code: bookingDetail.booking_code,
+			// passenger_name: bookingDetail.passenger_name,
+			// passenger_title: bookingDetail.passenger_title,
+			// depart_time: bookingDetail.depart_time,
+			// arrival_time: bookingDetail.arrival_time,
+			// airline: bookingDetail.airline,
+			// icon: bookingDetail.icon
 		};
 	} catch (error) {
 		if (error instanceof ClientError) {
@@ -186,8 +185,6 @@ const getBookingDetailsByBookingIdHandler = async (request, h) => {
 		return response;
 	}
 };
-
-
 
 const putBookingByIdHandler = async (request, h) => {
 	try {
@@ -237,10 +234,50 @@ const putBookingByIdHandler = async (request, h) => {
 	}
 };
 
+const deleteBookingsHandler = async (request, h) => {
+	try {
+		const { id: idUser } = request.auth.credentials;
+
+		const query = {
+			text: 'DELETE FROM bookings WHERE id_user = $1 RETURNING id',
+			values: [idUser],
+		};
+		const result = await pool.query(query);
+
+		if (!result.rows[0].length) {
+			throw new InvariantError('All bookings failed to be deleted');
+		}
+
+		return {
+			status: 'success',
+			message: 'Bookings has been deleted',
+		};
+	} catch (error) {
+		if (error instanceof ClientError) {
+			const response = h.response({
+				status: 'fail',
+				message: error.message,
+			});
+			response.code(error.statusCode);
+			return response;
+		}
+
+		// Server ERROR!
+		const response = h.response({
+			status: 'error',
+			message: 'Sorry, there was a failure on our server.',
+		});
+		response.code(500);
+		console.error(error);
+		return response;
+	}
+};
+
 module.exports = {
 	getFlightsHandler,
 	postFlightBookingHandler,
 	getBookingByUserIdHandler,
 	putBookingByIdHandler,
-	getBookingDetailsByBookingIdHandler
+	getBookingDetailsByBookingIdHandler,
+	deleteBookingsHandler,
 };
