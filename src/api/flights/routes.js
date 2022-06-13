@@ -3,7 +3,7 @@ const {
 	postFlightBookingHandler,
 	getBookingByUserIdHandler,
 	putBookingByIdHandler,
-	getBookingDetailsByBookingIdHandler
+	getBookingDetailsByBookingIdHandler,
 } = require('./handler');
 
 const routes = [

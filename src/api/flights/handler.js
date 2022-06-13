@@ -163,8 +163,7 @@ const getBookingDetailsByBookingIdHandler = async (request, h) => {
 					depart_time: booking.depart_time,
 					arrival_time: booking.arrival_time,
 					airline: booking.airline,
-					icon: booking.icon
-
+					icon: booking.icon,
 				})),
 			},
 		};
@@ -188,8 +187,6 @@ const getBookingDetailsByBookingIdHandler = async (request, h) => {
 		return response;
 	}
 };
-
-
 
 const putBookingByIdHandler = async (request, h) => {
 	try {
@@ -244,5 +241,5 @@ module.exports = {
 	postFlightBookingHandler,
 	getBookingByUserIdHandler,
 	putBookingByIdHandler,
-	getBookingDetailsByBookingIdHandler
+	getBookingDetailsByBookingIdHandler,
 };
