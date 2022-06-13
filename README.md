@@ -319,23 +319,18 @@
     "status": "success",
     "message": "Booking success",
     "data": {
-        "bookings": [
-          {
-            "id": "booking--O25hiweBPPwF188",
-             "departure": "Makassar",
-             "destination": "Balikpapan",
-             "status": "success",
-             "price": 819200,
-             "booking_code": 632467104,
-             "passenger_name": "SURIAMAN",
-             "passenger_title": "Mr",
-             "depart_time": "7:45",
-             "arrival_time": "9:00",
-             "airline": "Batik",
-             "icon": "https://ik.imagekit.io/tvlk/image/imageResource/2019/12/13 ..."
-          },
-          {...}
-        ]
+        "id": "booking--O25hiweBPPwF188",
+        "depart_time": "7:45",
+        "arrival_time": "9:00",
+        "departure": "Makassar",
+        "destination": "Balikpapan",
+        "status": "success",
+        "price": 819200,
+        "booking_code": 632467104,
+        "passenger_name": "SURIAMAN",
+        "passenger_title": "Mr",
+        "airline": "Batik",
+        "icon": "https://ik.imagekit.io/tvlk/image/imageResource/2019/12/13/1576208649600-12471f9b7ffa159361f7bbbfb63065ee.png"
     }
     ```
 
