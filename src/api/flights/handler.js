@@ -147,26 +147,24 @@ const getBookingDetailsByBookingIdHandler = async (request, h) => {
 			values: [idBooking],
 		};
 		const result = await pool.query(query);
-		const bookings = result.rows;
+		const bookingDetail = result.rows[0];
 		return {
 			status: 'success',
-			data: {
-				bookings: bookings.map((booking) => ({
-					id: booking.id,
-					departure: booking.departure,
-					destination: booking.destination,
-					status: booking.status,
-					price: booking.price,
-					booking_code: booking.booking_code,
-					passenger_name: booking.passenger_name,
-					passenger_title: booking.passenger_title,
-					depart_time: booking.depart_time,
-					arrival_time: booking.arrival_time,
-					airline: booking.airline,
-					icon: booking.icon
+			data:
+				bookingDetail,
 
-				})),
-			},
+					// id: bookingDetail.id,
+					// departure: bookingDetail.departure,
+					// destination: bookingDetail.destination,
+					// status: bookingDetail.status,
+					// price: bookingDetail.price,
+					// booking_code: bookingDetail.booking_code,
+					// passenger_name: bookingDetail.passenger_name,
+					// passenger_title: bookingDetail.passenger_title,
+					// depart_time: bookingDetail.depart_time,
+					// arrival_time: bookingDetail.arrival_time,
+					// airline: bookingDetail.airline,
+					// icon: bookingDetail.icon
 		};
 	} catch (error) {
 		if (error instanceof ClientError) {
