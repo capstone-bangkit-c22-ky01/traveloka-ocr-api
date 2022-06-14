@@ -11,7 +11,6 @@ const axios = require('axios');
 
 const pool = new Pool();
 
-
 // Import creditions.json from firebase
 const serviceAccount = require('../../../traveloka-ocr-firebase-adminsdk-5avyv-0bad59c40a.json');
 
@@ -77,24 +76,24 @@ async function storeFileUpload(file) {
 
 // Function for deleting the previous files
 async function deletePrevFile(imageName, jsonName) {
-    const path1 = `./ktp/${imageName}`;
-    const path2 = `./ktp/${jsonName}`;
-    // file removed from local storage
-    try {
-        fs.unlinkSync(path1);
-        fs.unlinkSync(path2);
-    } catch(error) {
-        throw new InvariantError('Failed to delete the file locally');
-    }
+	const path1 = `./ktp/${imageName}`;
+	const path2 = `./ktp/${jsonName}`;
+	// file removed from local storage
+	try {
+		fs.unlinkSync(path1);
+		fs.unlinkSync(path2);
+	} catch (error) {
+		throw new InvariantError('Failed to delete the file locally');
+	}
 
-    // delete image from firebase storage
-    try {
-        await storageRef.file(`ktpimage/${imageName}`).delete();
-        await storageRef.file(`ktpimage/${jsonName}`).delete();
-    } catch(error) {
-        // console.error(err);
-        throw new InvariantError('Failed to delete the files in the server');
-    }
+	// delete image from firebase storage
+	try {
+		await storageRef.file(`ktpimage/${imageName}`).delete();
+		await storageRef.file(`ktpimage/${jsonName}`).delete();
+	} catch (error) {
+		// console.error(err);
+		throw new InvariantError('Failed to delete the files in the server');
+	}
 }
 
 // Function for getting and writing coordinates into file.json
@@ -113,151 +112,159 @@ async function writeCoordinates(dataClassString, imageUrl) {
 
 // handler function POST ktp
 const addImageKtp = async (request, h) => {
-    try{
-        const { payload } = request;
-        const id = nanoid(16);
-        const { id:idUser } = request.auth.credentials;
-        
-        allName = Date.now();
+	try {
+		const { payload } = request;
+		const id = nanoid(16);
+		const { id: idUser } = request.auth.credentials;
 
-        // BUAT NGEHAPPUS DATA KTP DI DATABASE --------------------------------
-        const queryCheckRowResults = {
-            text: 'SELECT id FROM ktpresults WHERE id_user = $1',
-            values: [idUser],
-        };
-        const checkRow = await pool.query(queryCheckRowResults);
+		allName = Date.now();
 
-        // Checking the ktps tabel rows
-        if(Object.keys(checkRow.rows).length !== 0){
+		// BUAT NGEHAPPUS DATA KTP DI DATABASE --------------------------------
+		const queryCheckRowResults = {
+			text: 'SELECT id FROM ktpresults WHERE id_user = $1',
+			values: [idUser],
+		};
+		const checkRow = await pool.query(queryCheckRowResults);
 
-            // Delete
-            const queryDeleteResult = {
-                text: 'DELETE from ktpresults WHERE id_user = $1',
-                values: [idUser],
-            };
-            await pool.query(queryDeleteResult);
-            // console.log("Udah dihapus data ktp result-nya");
-        };
-        // --------------------------------------------------
+		// Checking the ktps tabel rows
+		if (Object.keys(checkRow.rows).length !== 0) {
+			// Delete
+			const queryDeleteResult = {
+				text: 'DELETE from ktpresults WHERE id_user = $1',
+				values: [idUser],
+			};
+			await pool.query(queryDeleteResult);
+			// console.log("Udah dihapus data ktp result-nya");
+		}
+		// --------------------------------------------------
 
-        const imageUrl = await storeFileUpload(payload.file);
-        
-        // fill the database
-        const query = {
-            text: 'INSERT INTO ktps VALUES($1, $2, $3) RETURNING id',
-            values: [id, imageUrl, idUser],
-        };
-        
-        const result = await pool.query(query);
-        if(!result.rows.length) {
-            throw new InvariantError('Failed to add KTP image to Database')
-        }
-        
-        // console.log((fileku.hapi).filename);        
-        const forpyFilename = ((payload.file).hapi).filename;
-        const ext = path.extname(forpyFilename);
+		const imageUrl = await storeFileUpload(payload.file);
 
-        const filenameCustom = allName +'ktp'+ ext;
+		// fill the database
+		const query = {
+			text: 'INSERT INTO ktps VALUES($1, $2, $3) RETURNING id',
+			values: [id, imageUrl, idUser],
+		};
 
-        const pyFilename = `testing/${filenameCustom}`;
+		const result = await pool.query(query);
+		if (!result.rows.length) {
+			throw new InvariantError('Failed to add KTP image to Database');
+		}
 
-        writeCoordinates(payload.data, pyFilename);
-        // writeCoordinates(payload.data, imageUrl);
+		// console.log((fileku.hapi).filename);
+		const forpyFilename = payload.file.hapi.filename;
+		const ext = path.extname(forpyFilename);
 
-        // //PAKE REQUEST
-        // var options = {
-        //     method: 'POST',
-        //     uri:'http://localhost:5000/',
-        //     body: filenameCustom, // 1654161993498ktp.png
-        //     json: true,
-        // };
+		const filenameCustom = allName + 'ktp' + ext;
 
-        // console.log("Atas---------------");
-        // var sendrequest = await requestt(options)
-        // .then(function (parsedBody) {
-        //     console.log("INI PARSE---------------");
-        //     console.log(parsedBody);
-        // })
-        // .catch(function (err) {
-        //     console.log(err);
-        // });
-        // console.log("Bawah---------------");
-        // // ----------------------------------------------------------------
+		const pyFilename = `testing/${filenameCustom}`;
 
-        // PAKAI AXIOS
-        // await axios.post('http://localhost:5000/', {filenameCustom})
-        await axios.post('https://ocr-model-eoyzxrvqla-et.a.run.app/', {filenameCustom})
+		writeCoordinates(payload.data, pyFilename);
+		// writeCoordinates(payload.data, imageUrl);
 
-            .then((res) =>{
-                // console.log(`Status: ${res.status}`);
-                // console.log('Body: ', res.data);
+		// //PAKE REQUEST
+		// var options = {
+		//     method: 'POST',
+		//     uri:'http://localhost:5000/',
+		//     body: filenameCustom, // 1654161993498ktp.png
+		//     json: true,
+		// };
 
-                const id_ktpresult = nanoid(16);
-                const title = "mr";
+		// console.log("Atas---------------");
+		// var sendrequest = await requestt(options)
+		// .then(function (parsedBody) {
+		//     console.log("INI PARSE---------------");
+		//     console.log(parsedBody);
+		// })
+		// .catch(function (err) {
+		//     console.log(err);
+		// });
+		// console.log("Bawah---------------");
+		// // ----------------------------------------------------------------
 
-                const queryKtpR = {
-                	text: 'INSERT INTO ktpresults VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
-                	values: [id_ktpresult, title, res.data.name, res.data.nationality, res.data.nik, res.data.sex, res.data.married, idUser],
-                };
-                pool.query(queryKtpR);
+		// PAKAI AXIOS
+		// await axios.post('http://localhost:5000/', {filenameCustom})
+		await axios
+			.post('https://ocr-model-eoyzxrvqla-et.a.run.app/', { filenameCustom })
 
-            }).catch((error) =>{
-                // console.log(error.response); 
-                // console.log("Terjadi Error!")
-                throw new InvariantError('Failed to get data from model');
+			.then((res) => {
+				// console.log(`Status: ${res.status}`);
+				// console.log('Body: ', res.data);
 
-            });
-        // -----------------------------------------------------------------------
+				const id_ktpresult = nanoid(16);
+				const title = 'mr';
 
-        // Deleting image
-   
-            const queryGet = {
-                text: 'SELECT image_url FROM ktps WHERE id_user = $1',
-                values: [idUser],
-            };
-    
-            const getKtpUrl = await pool.query(queryGet);
-            const imageName = await (getKtpUrl.rows[0].image_url).substr(40);
-            const jsonName = await (getKtpUrl.rows[0].image_url).slice(40,56) + ".json";
-    
-            await deletePrevFile(imageName, jsonName);
+				const queryKtpR = {
+					text: 'INSERT INTO ktpresults VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *',
+					values: [
+						id_ktpresult,
+						title,
+						res.data.name,
+						res.data.nationality,
+						res.data.nik,
+						res.data.sex,
+						res.data.married,
+						idUser,
+					],
+				};
+				pool.query(queryKtpR);
+			})
+			.catch((error) => {
+				// console.log(error.response);
+				// console.log("Terjadi Error!")
+				throw new InvariantError('Failed to get data from model');
+			});
+		// -----------------------------------------------------------------------
 
-            // If Delete
-            const queryDelete = {
-                text: 'DELETE from ktps WHERE id_user = $1',
-                values: [idUser],
-            };
-            await pool.query(queryDelete);
-            // console.log("Udah dihapus row-nya");
+		// Deleting image
 
-        const imageId = result.rows[0].id;
-        const response = h.response({
-            status: 'Success',
-            message: 'KTP image successfully added',
-            data:{
-                imageId,
-            },
-        });
-        response.code(201);
-        return response;
-    } catch(error){
-        if (error instanceof ClientError) {
-            const response = h.response({
-                status: 'failed',
-                message: error.message,
-            });
-            response.code(error.statusCode);
-            return response;
-        }
+		const queryGet = {
+			text: 'SELECT image_url FROM ktps WHERE id_user = $1',
+			values: [idUser],
+		};
 
-        // Server error
-        const response = h.response({
-            status: 'error',
-            message: 'Sorry, there was a failure on our server.',
-        });
-        response.code(500);
-        console.error(error);
-        return response;
-    }
+		const getKtpUrl = await pool.query(queryGet);
+		const imageName = await getKtpUrl.rows[0].image_url.substr(40);
+		const jsonName = (await getKtpUrl.rows[0].image_url.slice(40, 56)) + '.json';
+
+		await deletePrevFile(imageName, jsonName);
+
+		// If Delete
+		const queryDelete = {
+			text: 'DELETE from ktps WHERE id_user = $1',
+			values: [idUser],
+		};
+		await pool.query(queryDelete);
+		// console.log("Udah dihapus row-nya");
+
+		const imageId = result.rows[0].id;
+		const response = h.response({
+			status: 'Success',
+			message: 'KTP image successfully added',
+			data: {
+				imageId,
+			},
+		});
+		response.code(201);
+		return response;
+	} catch (error) {
+		if (error instanceof ClientError) {
+			const response = h.response({
+				status: 'failed',
+				message: error.message,
+			});
+			response.code(error.statusCode);
+			return response;
+		}
+
+		// Server error
+		const response = h.response({
+			status: 'error',
+			message: 'Sorry, there was a failure on our server.',
+		});
+		response.code(500);
+		console.error(error);
+		return response;
+	}
 };
 module.exports = { addImageKtp };
