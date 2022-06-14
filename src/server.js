@@ -70,7 +70,7 @@ const init = async () => {
 	server.route(routesAuth);
 	server.route(routeFlights);
 	server.route(routesKtpResults);
-	server.route(routesKtps);
+	// server.route(routesKtps);
 
 	await server.start();
 	console.log(`Server berjalan pada ${server.info.uri}`);
