@@ -249,7 +249,7 @@ const deleteBookingsHandler = async (request, h) => {
 		};
 		const result = await pool.query(query);
 
-		if (!result.rows[0].length) {
+		if (!result.rows.length) {
 			throw new InvariantError('All bookings failed to be deleted');
 		}
 
@@ -288,7 +288,7 @@ const deleteBookingByIdHandler = async (request, h) => {
 		};
 		const result = await pool.query(query);
 
-		if (!result.rows[0].length) {
+		if (!result.rows.length) {
 			throw new InvariantError('A booking failed to be deleted');
 		}
 
