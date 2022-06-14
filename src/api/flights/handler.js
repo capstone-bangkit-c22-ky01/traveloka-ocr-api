@@ -5,6 +5,18 @@ const ClientError = require('../../exceptions/ClientError');
 
 const pool = new Pool();
 
+checkExistBooking = async (userId) => {
+	const query = {
+		text: 'SELECT * FROM bookings WHERE id_user = $1',
+		values: [userId],
+	};
+	const result = await pool.query(query);
+
+	if (!result.rows[0]) {
+		throw new InvariantError('Booking data does not exist');
+	}
+};
+
 const getFlightsHandler = async (request, h) => {
 	const { departure, destination } = request.query;
 	const query = {
@@ -242,6 +254,7 @@ const putBookingByIdHandler = async (request, h) => {
 const deleteBookingsHandler = async (request, h) => {
 	try {
 		const { id: idUser } = request.auth.credentials;
+		await checkExistBooking(idUser);
 
 		const query = {
 			text: 'DELETE FROM bookings WHERE id_user = $1 RETURNING id',
