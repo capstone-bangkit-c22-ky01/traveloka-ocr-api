@@ -309,6 +309,7 @@
     }
     ```
 - Get Detail Booking History
+
   - method: `GET`
   - endpoint: `/flights/booking/{id}`
   - authorization:
@@ -343,8 +344,8 @@
   - body request:
     ```json
     {
-    "title": "Mr",
-    "name": "SURIAMAN"
+    	"title": "Mr",
+    	"name": "SURIAMAN"
     }
     ```
   - body response:
@@ -355,39 +356,74 @@
         "bookingId": "booking-Jij8..."
     }
     ```
-
-### Insert ID Card Image (also Retake) (Auth Require)
-  - method: `POST`
-  - endpoint: `/ktp`
+- Delete All Booking
+  - method: `DELETE`
+  - endpoint: `/flights/booking`
   - authorization:
     - type: `Bearer Token`,
     - token: `accessToken`
-  - header: multipart/form-data
-  - body request:
-    ```
-    * file: `image/jpg` or `image/jpeg` or `image/png`   |file
-    * data: { "class": {
-                "NIK": {
-                  "Xmin": 117,
-                  "Ymin": 89,
-                  "Xmax": 392,
-                  "Ymax": 135
-                },
-                "name": {...},
-                "sex": {...},
-                "married": {...},
-                "nationality": {...}
-              }
-            }
-    ```
   - body response:
     ```json
-     "status": "Success",
-     "message": "KTP image successfully added",
-     "data": {
-        "imageId": "wPnJ9TehHkm1JaZ4"
-     }
+    "status": "success",
+    "message": "Bookings has been deleted",
     ```
+- Delete All Booking but bookings history doesn't exist
+  - method: `DELETE`
+  - endpoint: `/flights/booking`
+  - authorization:
+    - type: `Bearer Token`,
+    - token: `accessToken`
+  - body response:  
+    status code = `400`
+    ```json
+    "status": "fail",
+    "message": "Booking data does not exist",
+    ```
+- Delete Booking by Id Booking
+  - method: `DELETE`
+  - endpoint: `/flights/booking/{id}`
+  - authorization:
+    - type: `Bearer Token`,
+    - token: `accessToken`
+  - body response:
+    ```json
+    "status": "success",
+    "message": "A booking history has been deleted",
+    ```
+
+### Insert ID Card Image (also Retake) (Auth Require)
+
+- method: `POST`
+- endpoint: `/ktp`
+- authorization:
+  - type: `Bearer Token`,
+  - token: `accessToken`
+- header: multipart/form-data
+- body request:
+  ```
+  * file: `image/jpg` or `image/jpeg` or `image/png`   |file
+  * data: { "class": {
+              "NIK": {
+                "Xmin": 117,
+                "Ymin": 89,
+                "Xmax": 392,
+                "Ymax": 135
+              },
+              "name": {...},
+              "sex": {...},
+              "married": {...},
+              "nationality": {...}
+            }
+          }
+  ```
+- body response:
+  ```json
+   "status": "Success",
+   "message": "KTP image successfully added",
+   "data": {
+      "imageId": "wPnJ9TehHkm1JaZ4"
+   }
+  ```
 
 ### Retrieve data from Card-id (Auth Require)
 
@@ -413,16 +449,16 @@
   - endpoint: `/ktpresult`
   - body request:
     ```json
-      {
-        "title": "Ms",
-        "name": "Artia...",
-        "nationality": "Indonesia",
-        "nik": "111111111111111",
-        "sex": "Female",
-        "married": "Single"
-      }
-      ```
-      \*note: body request is from GET /ktpresult output + data that edited by user manually
+    {
+    	"title": "Ms",
+    	"name": "Artia...",
+    	"nationality": "Indonesia",
+    	"nik": "111111111111111",
+    	"sex": "Female",
+    	"married": "Single"
+    }
+    ```
+    \*note: body request is from GET /ktpresult output + data that edited by user manually
   - body response:
     ```json
     "status": "success",
