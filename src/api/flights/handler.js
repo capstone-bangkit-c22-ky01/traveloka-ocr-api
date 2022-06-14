@@ -191,6 +191,11 @@ const putBookingByIdHandler = async (request, h) => {
 		const { id: idBooking } = request.params;
 		const { title, name } = request.payload;
 
+		// checking the exist title and name
+		if (!title || !name) {
+			throw new InvariantError('Please include the title and name');
+		}
+
 		const status = 'success';
 		const updatedAt = new Date().toISOString();
 
@@ -272,6 +277,45 @@ const deleteBookingsHandler = async (request, h) => {
 		return response;
 	}
 };
+const deleteBookingByIdHandler = async (request, h) => {
+	try {
+		const { id: idUser } = request.auth.credentials;
+		const { id: idBooking } = request.params;
+
+		const query = {
+			text: 'DELETE FROM bookings WHERE id = $1 AND id_user = $2 RETURNING id',
+			values: [idBooking, idUser],
+		};
+		const result = await pool.query(query);
+
+		if (!result.rows[0].length) {
+			throw new InvariantError('A booking failed to be deleted');
+		}
+
+		return {
+			status: 'success',
+			message: 'A booking history has been deleted',
+		};
+	} catch (error) {
+		if (error instanceof ClientError) {
+			const response = h.response({
+				status: 'fail',
+				message: error.message,
+			});
+			response.code(error.statusCode);
+			return response;
+		}
+
+		// Server ERROR!
+		const response = h.response({
+			status: 'error',
+			message: 'Sorry, there was a failure on our server.',
+		});
+		response.code(500);
+		console.error(error);
+		return response;
+	}
+};
 
 module.exports = {
 	getFlightsHandler,
@@ -280,4 +324,5 @@ module.exports = {
 	putBookingByIdHandler,
 	getBookingDetailsByBookingIdHandler,
 	deleteBookingsHandler,
+	deleteBookingByIdHandler,
 };
