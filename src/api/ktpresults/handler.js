@@ -10,21 +10,20 @@ function uppercase(string) {
 
 const getKtpResult = async (request, h) => {
 	try {
-		const { id:idUser } = request.auth.credentials
+		const { id: idUser } = request.auth.credentials;
 
 		// const queryImageKtp = {
 		// 	text: 'SELECT id FROM ktps WHERE id_user = $1',
 		// 	values: [id],
 		// }
-		
+
 		// const getIdKtp = await pool.query(queryImageKtp);
 		// const id_ktp = getIdKtp.rows[0].id ;
-		
-		const query = { 
+
+		const query = {
 			text: 'SELECT title, name, nationality, nik, sex, married FROM ktpresults WHERE id_user = $1',
-			values: [idUser]
-		}
-		
+			values: [idUser],
+		};
 
 		const result = await pool.query(query);
 		if (!result.rows.length) {
@@ -32,9 +31,8 @@ const getKtpResult = async (request, h) => {
 		}
 
 		const dataKtp = result.rows[0];
-		
-		if (uppercase(dataKtp.sex) !== 'MALE' && uppercase(dataKtp.sex) !=='FEMALE'){
 
+		if (uppercase(dataKtp.sex) !== 'MALE' && uppercase(dataKtp.sex) !== 'FEMALE') {
 			if (uppercase(dataKtp.sex) == 'PEREMPUAN' && uppercase(dataKtp.married) == 'KAWIN') {
 				dataKtp.title = 'Mrs';
 				dataKtp.sex = 'Female';
@@ -60,7 +58,6 @@ const getKtpResult = async (request, h) => {
 		});
 		response.code(201);
 		return response;
-
 	} catch (error) {
 		if (error instanceof ClientError) {
 			const response = h.response({
@@ -84,15 +81,14 @@ const getKtpResult = async (request, h) => {
 
 const putKtpResult = async (request, h) => {
 	try {
-
 		const { title, name, nationality, nik, sex, married } = request.payload;
-		const { id:idUser } = request.auth.credentials
+		const { id: idUser } = request.auth.credentials;
 
 		// const queryImageKtp = {
 		// 	text: 'SELECT id FROM ktps WHERE id_user = $1',
 		// 	values: [id],
 		// }
-		
+
 		// const getIdKtp = await pool.query(queryImageKtp);
 		// const id_ktp = getIdKtp.rows[0].id ;
 
@@ -105,7 +101,7 @@ const putKtpResult = async (request, h) => {
 		if (!result.rows.length) {
 			throw new InvariantError('Failed update data from KtpResults');
 		}
-		
+
 		const dataKtp = result.rows;
 		const response = h.response({
 			status: 'success',
@@ -113,7 +109,6 @@ const putKtpResult = async (request, h) => {
 		});
 		response.code(201);
 		return response;
-
 	} catch (error) {
 		if (error instanceof ClientError) {
 			const response = h.response({
