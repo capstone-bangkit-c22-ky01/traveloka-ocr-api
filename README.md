@@ -291,23 +291,60 @@
     - type: `Bearer Token`,
     - token: `accessToken`
   - body response:
-    ```json
-    "status": "success",
-    "message": "Booking success",
-    "data": {
-        "bookings": [
-          {
-            "id": "booking-Jij8v2tmajLkfcgj",
-            "departure": "Jakarta",
-            "destination": "Bali",
-            "booking_code": 596253936,
-            "price": 2374000,
-            "status": "success",
-          },
-          {...}
-        ]
-    }
-    ```
+    - `pending`
+      ```json
+      "status": "success",
+      "message": "Booking success",
+      "data": {
+          "bookings": [
+            {
+              "id": "booking-Jij8v2tmajLkfcgj",
+              "departure": "Jakarta",
+              "destination": "Bali",
+              "booking_code": 596253936,
+              "price": 2374000,
+              "status": "pending",
+            },
+            {...}
+          ]
+      }
+      ```
+    - `success`
+      ```json
+      "status": "success",
+      "message": "Booking success",
+      "data": {
+          "bookings": [
+            {
+              "id": "booking-Jij8v2tmajLkfcgj",
+              "departure": "Jakarta",
+              "destination": "Bali",
+              "booking_code": 596253936,
+              "price": 2374000,
+              "status": "success",
+            },
+            {...}
+          ]
+      }
+      ```
+    - `canceled` = after 2 minutes pendings will become canceled
+      ```json
+      "status": "success",
+      "message": "Booking success",
+      "data": {
+          "bookings": [
+            {
+              "id": "booking-Jij8v2tmajLkfcgj",
+              "departure": "Jakarta",
+              "destination": "Bali",
+              "booking_code": 596253936,
+              "price": 2374000,
+              "status": "canceled",
+            },
+            {...}
+          ]
+      }
+      ```
 - Get Detail Booking History
 
   - method: `GET`
