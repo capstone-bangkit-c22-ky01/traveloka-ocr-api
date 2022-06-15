@@ -120,7 +120,7 @@ const getBookingByUserIdHandler = async (request, h) => {
 
 		bookings.map((booking) => {
 			duration = dateNow - booking.created_at;
-			if (booking.status === 'pending' && duration > 120000) {
+			if (booking.status === 'pending' && duration > 300000) {
 				booking.status = 'canceled';
 			}
 		});
