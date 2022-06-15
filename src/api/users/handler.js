@@ -9,7 +9,7 @@ const ClientError = require('../../exceptions/ClientError');
 
 const pool = new Pool();
 
-const verifyEmail = async (email) => {
+const verifyEmail = async (email, message) => {
 	const query = {
 		text: 'SELECT email FROM users WHERE email = $1',
 		values: [email],
@@ -18,14 +18,14 @@ const verifyEmail = async (email) => {
 	const result = await pool.query(query);
 
 	if (result.rows.length > 0) {
-		throw new InvariantError('Failed to add email. Email is alredy in use.');
+		throw new InvariantError(`Failed to ${message} email. Email is already in use.`);
 	}
 };
 
 const postUserHandler = async (request, h) => {
 	try {
 		const { name, email, password, fotoProfil } = request.payload;
-		await verifyEmail(email);
+		await verifyEmail(email, 'add');
 
 		const id = `users-${nanoid(16)}`;
 		const hashedPassword = await bcrypt.hash(password, 10);
@@ -81,7 +81,7 @@ const getUserByAuthHandler = async (request, h) => {
 		};
 		const result = await pool.query(query);
 		if (!result.rows.length) {
-			throw new NotFoundError('User tidak ditemukan');
+			throw new NotFoundError('User not found');
 		}
 
 		const dataUser = result.rows[0];
@@ -115,6 +115,8 @@ const putUserByAuthHandler = async (request, h) => {
 		// call class of StorageService to object variable
 		const { id } = request.auth.credentials;
 		const { name, email, foto_profile: fotoProfil } = request.payload;
+		await verifyEmail(email, 'edit');
+
 		const storage = new StorageService(path.resolve(__dirname, `images/${id}`));
 		console.log(path.resolve(__dirname, 'images'));
 
