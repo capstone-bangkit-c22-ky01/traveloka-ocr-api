@@ -352,7 +352,8 @@
   - authorization:
     - type: `Bearer Token`,
     - token: `accessToken`
-  - body response:
+  - body response:  
+    Status same as get all booking
     ```json
     "status": "success",
     "message": "Booking success",
@@ -381,8 +382,8 @@
   - body request:
     ```json
     {
-    	"title": "Mr",
-    	"name": "SURIAMAN"
+    	"title": "Mr", (required)
+    	"name": "SURIAMAN" (required)
     }
     ```
   - body response:
