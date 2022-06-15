@@ -164,11 +164,23 @@ const getBookingDetailsByBookingIdHandler = async (request, h) => {
 		const { bookingId: idBooking } = request.params;
 
 		const query = {
-			text: 'SELECT bookings.id, depart_time, arrival_time, departure, destination, status, price, booking_code, passenger_name, passenger_title, airline, icon FROM flights INNER JOIN bookings ON flights.id=bookings.id_flight INNER JOIN airlines ON flights.id_airline=airlines.id WHERE bookings.id = $1',
+			text: `SELECT bookings.id, depart_time, arrival_time, departure, destination, status, price, booking_code, created_at, passenger_name, passenger_title, airline, icon 
+						FROM flights 
+						INNER JOIN bookings ON flights.id=bookings.id_flight 
+						INNER JOIN airlines 
+						ON flights.id_airline=airlines.id 
+						WHERE bookings.id = $1`,
 			values: [idBooking],
 		};
 		const result = await pool.query(query);
 		const bookingDetail = result.rows[0];
+		const dateNow = new Date().getTime();
+
+		duration = dateNow - bookingDetail.created_at;
+		if (bookingDetail.status === 'pending' && duration > 300000) {
+			bookingDetail.status = 'canceled';
+		}
+
 		return {
 			status: 'success',
 			data: bookingDetail,
