@@ -63,7 +63,7 @@ const postFlightBookingHandler = async (request, h) => {
 		const id = `booking-${nanoid(16)}`;
 		const status = 'pending';
 		const bookingCode = Math.floor(Math.random() * 1000000000);
-		const createdAt = new Date().toISOString();
+		const createdAt = new Date().getTime();
 		const updatedAt = createdAt;
 
 		const query = {
@@ -116,6 +116,15 @@ const getBookingByUserIdHandler = async (request, h) => {
 		};
 		const result = await pool.query(query);
 		const bookings = result.rows;
+		const dateNow = new Date().getTime();
+
+		bookings.map((booking) => {
+			duration = dateNow - booking.created_at;
+			if (booking.status === 'pending' && duration > 120000) {
+				booking.status = 'canceled';
+			}
+		});
+
 		return {
 			status: 'success',
 			data: {
